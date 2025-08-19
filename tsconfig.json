@@ -3,8 +3,9 @@
     "rootDir": "./src",
     "outDir": "./dist",
     "target": "esnext",
-    "module": "commonjs",
+    "module": "nodenext",
     "esModuleInterop": true,
+    "moduleResolution": "nodenext",
     "sourceMap": true,
     "declaration": true,
     "declarationMap": true,
@@ -15,14 +16,13 @@
     "noFallthroughCasesInSwitch": true,
     "forceConsistentCasingInFileNames": true,
     "lib": ["esnext", "esnext.asynciterable", "DOM"],
-    "types": ["node", "jest"],
+    "types": ["node"],
     "baseUrl": ".",
     "paths": {
       "*": ["types/*"]
     },
-    "typeRoots": ["node_modules/@types", "src/@types"],
+    "typeRoots": ["node_modules/@types", "src/@types"]
   },
-  "files": ["src/graphql.d.ts"],
-  "include": ["src/**/*", "codegen.ts"],
+  "include": ["src/**/*", "codegen.ts", "./**/*.graphql"],
   "exclude": ["codegen.ts", "dist"]
 }
