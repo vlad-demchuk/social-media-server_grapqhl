@@ -40,7 +40,7 @@ type LikePostResponse {
   code: Int!
   success: Boolean!
   message: String!
-  likesCount: Int!
+  post: Post
 }
 
 "Queries"

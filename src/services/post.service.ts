@@ -2,24 +2,40 @@ import { pool } from "../db.js";
 import { CreatePostInput } from "../types.js";
 
 export const getAll = async () => {
-  const result = await pool.query(`
-    SELECT 
-      posts.id, 
-      posts.content, 
-      posts.created_at AS "createdAt", 
-      users.username,
-      COUNT(DISTINCT likes.id) AS "likesCount",
-      COUNT(DISTINCT c.id) AS "commentsCount"
-    FROM posts
-    JOIN users ON users.id = posts.user_id
-    LEFT JOIN likes ON likes.post_id = posts.id
-    LEFT JOIN comments c ON c.post_id = posts.id
-    GROUP BY posts.id, users.username
-    ORDER BY posts.created_at DESC;
-  `);
+  const result = await pool.query(
+    `
+    SELECT p.id, p.content, p.created_at AS "createdAt", u.username,
+           COUNT(DISTINCT l.id) AS "likesCount",
+           COUNT(DISTINCT c.id) AS "commentsCount"
+    FROM posts p
+    JOIN users u ON u.id = p.user_id
+    LEFT JOIN likes l ON l.post_id = p.id
+    LEFT JOIN comments c ON c.post_id = p.id
+    GROUP BY p.id, u.username
+    ORDER BY p.created_at DESC;
+  `
+  );
 
-  console.log(result.rows);
   return result.rows;
+};
+
+export const getById = async (postId: number) => {
+  const result = await pool.query(
+    `
+    SELECT p.id, p.content, p.created_at AS "createdAt", u.username,
+           COUNT(DISTINCT l.id) AS "likesCount",
+           COUNT(DISTINCT c.id) AS "commentsCount"
+    FROM posts p
+    JOIN users u ON u.id = p.user_id
+    LEFT JOIN likes l ON l.post_id = p.id
+    LEFT JOIN comments c ON c.post_id = p.id
+    WHERE p.id = $1
+    GROUP BY p.id, u.username
+  `,
+    [postId]
+  );
+
+  return result.rows[0];
 };
 
 export const create = async ({
