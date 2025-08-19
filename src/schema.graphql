@@ -1,0 +1,59 @@
+scalar DateTime
+
+"Posts"
+type Post {
+  id: ID!
+  content: String!
+  createdAt: DateTime!
+  username: String!
+  likesCount: Int!
+  commentsCount: Int!
+  # comments: [Comment!]!
+}
+
+type Comment {
+  id: ID!
+  content: String!
+  createdAt: DateTime!
+  username: String!
+}
+
+input CreatePostInput {
+  content: String!
+}
+
+type CreatePostResponse {
+  code: Int!
+  success: Boolean!
+  message: String!
+  post: Post
+}
+
+type DeletePostResponse {
+  code: Int!
+  success: Boolean!
+  message: String!
+  postId: Int
+}
+
+type LikePostResponse {
+  code: Int!
+  success: Boolean!
+  message: String!
+  likesCount: Int!
+}
+
+"Queries"
+type Query {
+  "Posts"
+  posts: [Post!]!
+}
+
+"Mutations"
+type Mutation {
+  "Posts"
+  createPost(input: CreatePostInput!): CreatePostResponse!
+  deletePost(postId: Int!): DeletePostResponse!
+  likePost(postId: Int!): LikePostResponse!
+  unlikePost(postId: Int!): LikePostResponse!
+}
