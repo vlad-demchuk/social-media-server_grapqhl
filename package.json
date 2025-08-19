@@ -2,23 +2,40 @@
   "name": "social-media_graphql",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "type": "module",
+  "engines": {
+    "node": ">=18.0"
+  },
   "scripts": {
-    "compile": "tsc",
-    "dev": "concurrently \"ts-node-dev --respawn --watch ./**/*.graphql ./src/index.ts\" \"npm run generate\"",
-    "generate": "graphql-codegen --watch \"src/schema.graphql\"",
-    "start": "npm run compile && nodemon ./dist/index.js"
+    "compile": "tsc && cp ./src/schema.graphql ./dist/schema.graphql",
+    "generate": "graphql-codegen",
+    "generate:watch": "graphql-codegen --watch \"src/schema.graphql\"",
+    "start": "npm run compile && node ./dist/index.js",
+    "dev": "concurrently \"npm run compile && nodemon ./dist/index.js\" \"npm run generate:watch\""
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "type": "module",
   "dependencies": {
     "@apollo/server": "^5.0.0",
-    "graphql": "^16.11.0"
+    "@parcel/watcher": "^2.4.0",
+    "@types/pg": "^8.15.5",
+    "dotenv": "^17.2.1",
+    "graphql": "^16.11.0",
+    "graphql-tag": "^2.12.6",
+    "pg": "^8.16.3"
   },
   "devDependencies": {
+    "@graphql-codegen/cli": "^5.0.7",
+    "@graphql-codegen/typescript": "^4.1.6",
+    "@graphql-codegen/typescript-resolvers": "^4.5.1",
     "@types/node": "^24.3.0",
-    "typescript": "^5.9.2"
+    "concurrently": "^9.2.0",
+    "nodemon": "^3.1.10",
+    "ts-node": "^10.9.2",
+    "ts-node-dev": "^2.0.0",
+    "typescript": "5.3.3"
   }
 }
