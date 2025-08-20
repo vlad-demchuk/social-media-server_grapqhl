@@ -1,6 +1,6 @@
-import * as postService from "./services/post.service.js";
-import * as likeService from "./services/like.service.js";
-import { Resolvers } from "./types.js";
+import * as postService from "./services/post.service";
+import * as likeService from "./services/like.service";
+import { Resolvers } from "./types";
 
 export const resolvers: Resolvers = {
   Query: {
@@ -22,7 +22,7 @@ export const resolvers: Resolvers = {
           code: 200,
           success: true,
           message: "Post successfully created!",
-          post,
+          post: {...post, commentsCount2: 12}
         };
       } catch (error) {
         return {

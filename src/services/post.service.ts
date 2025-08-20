@@ -1,5 +1,5 @@
-import { pool } from "../db.js";
-import { CreatePostInput } from "../types.js";
+import { pool } from "../db";
+import { CreatePostInput } from "../types";
 
 export const getAll = async () => {
   const result = await pool.query(

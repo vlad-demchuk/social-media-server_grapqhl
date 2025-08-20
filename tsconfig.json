@@ -1,15 +1,9 @@
 {
   "compilerOptions": {
-    "rootDir": "./src",
-    "outDir": "./dist",
     "target": "esnext",
     "module": "nodenext",
     "esModuleInterop": true,
-    "moduleResolution": "nodenext",
     "sourceMap": true,
-    "declaration": true,
-    "declarationMap": true,
-    "removeComments": true, 
     "skipLibCheck": true,
     "noImplicitAny": true,
     "noImplicitReturns": true,
@@ -23,6 +17,5 @@
     },
     "typeRoots": ["node_modules/@types", "src/@types"]
   },
-  "include": ["src/**/*", "codegen.ts", "./**/*.graphql"],
-  "exclude": ["codegen.ts", "dist"]
+  "include": ["src/**/*", "codegen.ts", "./**/*.graphql"]
 }

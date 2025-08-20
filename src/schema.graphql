@@ -16,6 +16,7 @@ type Comment {
   content: String!
   createdAt: DateTime!
   username: String!
+  user_id: Int!
 }
 
 input CreatePostInput {

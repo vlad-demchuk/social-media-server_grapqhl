@@ -1,5 +1,5 @@
-import { pool } from "../db.js";
-import { getById as getPostById } from "./post.service.js";
+import { pool } from "../db";
+import { getById as getPostById } from "./post.service";
 
 export const likePost = async (userId: number, postId: number) => {
   await pool.query(
