@@ -11,14 +11,6 @@ type Post {
   # comments: [Comment!]!
 }
 
-type Comment {
-  id: ID!
-  content: String!
-  createdAt: DateTime!
-  username: String!
-  user_id: Int!
-}
-
 input CreatePostInput {
   content: String!
 }
@@ -37,6 +29,7 @@ type DeletePostResponse {
   postId: Int
 }
 
+"Likes"
 type LikePostResponse {
   code: Int!
   success: Boolean!
@@ -44,10 +37,39 @@ type LikePostResponse {
   post: Post
 }
 
+"Comments"
+type Comment {
+  id: ID!
+  content: String!
+  createdAt: DateTime!
+  username: String!
+}
+
+input CreateCommentInput {
+  postId: Int!
+  content: String!
+}
+
+type CreateCommentResponse {
+  code: Int!
+  success: Boolean!
+  message: String!
+  comment: Comment
+}
+
+type DeleteCommentResponse {
+  code: Int!
+  success: Boolean!
+  message: String!
+  commentId: Int
+}
+
 "Queries"
 type Query {
   "Posts"
   posts: [Post!]!
+  "Comments"
+  comments(postId: Int!): [Comment!]!
 }
 
 "Mutations"
@@ -55,6 +77,10 @@ type Mutation {
   "Posts"
   createPost(input: CreatePostInput!): CreatePostResponse!
   deletePost(postId: Int!): DeletePostResponse!
+  "Likes"
   likePost(postId: Int!): LikePostResponse!
   unlikePost(postId: Int!): LikePostResponse!
+  "Comments"
+  createComment(input: CreateCommentInput!): CreateCommentResponse!
+  deleteComment(commentId: Int!): DeleteCommentResponse!
 }

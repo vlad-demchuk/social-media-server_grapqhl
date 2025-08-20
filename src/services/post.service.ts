@@ -46,7 +46,7 @@ export const create = async ({
     `
     INSERT INTO posts (user_id, content)
     VALUES ($1, $2)
-    RETURNING id, content, created_at, 
+    RETURNING id, content, created_at AS "createdAt", 
       (SELECT username FROM users WHERE users.id = posts.user_id) AS username
     `,
     [userId, content]
