@@ -2,85 +2,127 @@ scalar DateTime
 
 "Posts"
 type Post {
+  "Unique post identifier"
   id: ID!
+  "Text content of the post"
   content: String!
+  "Creation timestamp"
   createdAt: DateTime!
+  "Author's username"
   username: String!
+  "Number of likes on this post"
   likesCount: Int!
+  "Number of comments on this post"
   commentsCount: Int!
+  # "List of comments for this post"
   # comments: [Comment!]!
 }
 
 input CreatePostInput {
+  "Text body for the new post"
   content: String!
 }
 
 type CreatePostResponse {
+  "HTTP-like status code"
   code: Int!
+  "Indicates whether the operation succeeded"
   success: Boolean!
+  "Human-readable status message"
   message: String!
+  "The created post, if successful"
   post: Post
 }
 
 type DeletePostResponse {
+  "HTTP-like status code"
   code: Int!
+  "Indicates whether the operation succeeded"
   success: Boolean!
+  "Human-readable status message"
   message: String!
+  "Identifier of the deleted post"
   postId: Int
 }
 
 "Likes"
 type LikePostResponse {
+  "HTTP-like status code"
   code: Int!
+  "Indicates whether the operation succeeded"
   success: Boolean!
+  "Human-readable status message"
   message: String!
+  "Post with updated like counts"
   post: Post
 }
 
 "Comments"
 type Comment {
+  "Unique comment identifier"
   id: ID!
+  "Text content of the comment"
   content: String!
+  "Creation timestamp"
   createdAt: DateTime!
+  "Author's username"
   username: String!
 }
 
 input CreateCommentInput {
+  "Identifier of the post to comment on"
   postId: Int!
+  "Text body of the comment"
   content: String!
 }
 
 type CreateCommentResponse {
+  "HTTP-like status code"
   code: Int!
+  "Indicates whether the operation succeeded"
   success: Boolean!
+  "Human-readable status message"
   message: String!
+  "The created comment, if successful"
   comment: Comment
 }
 
 type DeleteCommentResponse {
+  "HTTP-like status code"
   code: Int!
+  "Indicates whether the operation succeeded"
   success: Boolean!
+  "Human-readable status message"
   message: String!
+  "Identifier of the deleted comment"
   commentId: Int
 }
 
 "Queries"
 type Query {
-  "Posts"
+  # Posts
+  "List all posts"
   posts: [Post!]!
-  "Comments"
+  # Comments
+  "List comments for a specific post"
   comments(postId: Int!): [Comment!]!
 }
 
-"Mutations"
+# Mutations
 type Mutation {
-  "Posts"
+  # Posts
+  "Create a new post"
   createPost(input: CreatePostInput!): CreatePostResponse!
+  "Delete a post by its identifier"
   deletePost(postId: Int!): DeletePostResponse!
-  "Likes"
+  # Likes
+  "Add a like to a post"
   likePost(postId: Int!): LikePostResponse!
+  "Remove a like from a post"
   unlikePost(postId: Int!): LikePostResponse!
-  "Comments"
+  # Comments
+  "Create a new comment on a post"
   createComment(input: CreateCommentInput!): CreateCommentResponse!
+  "Delete a comment by its identifier"
   deleteComment(commentId: Int!): DeleteCommentResponse!
 }
