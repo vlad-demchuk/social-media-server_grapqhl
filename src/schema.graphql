@@ -3,7 +3,7 @@ scalar DateTime
 "Posts"
 type Post {
   "Unique post identifier"
-  id: ID!
+  id: Int!
   "Text content of the post"
   content: String!
   "Creation timestamp"
@@ -14,6 +14,8 @@ type Post {
   likesCount: Int!
   "Number of comments on this post"
   commentsCount: Int!
+  "Whether the current user liked this post"
+  isLiked: Boolean!
   # "List of comments for this post"
   # comments: [Comment!]!
 }
@@ -60,7 +62,7 @@ type LikePostResponse {
 "Comments"
 type Comment {
   "Unique comment identifier"
-  id: ID!
+  id: Int!
   "Text content of the comment"
   content: String!
   "Creation timestamp"

@@ -1,38 +1,51 @@
-import { pool } from "../db";
-import { CreatePostInput } from "../types";
+import { pool } from '../db';
+import { CreatePostInput } from '../types';
 
-export const getAll = async () => {
+export const getAll = async (currentUserId: number) => {
   const result = await pool.query(
     `
-    SELECT p.id, p.content, p.created_at AS "createdAt", u.username,
-           COUNT(DISTINCT l.id) AS "likesCount",
-           COUNT(DISTINCT c.id) AS "commentsCount"
+    SELECT 
+      p.id, 
+      p.content, 
+      p.created_at AS "createdAt", 
+      u.username,
+      COUNT(DISTINCT l.id) AS "likesCount",
+      COUNT(DISTINCT c.id) AS "commentsCount",
+      EXISTS (
+        SELECT 1 
+        FROM likes l2 
+        WHERE l2.post_id = p.id 
+          AND l2.user_id = $1
+      ) AS "isLiked"
     FROM posts p
     JOIN users u ON u.id = p.user_id
     LEFT JOIN likes l ON l.post_id = p.id
     LEFT JOIN comments c ON c.post_id = p.id
     GROUP BY p.id, u.username
     ORDER BY p.created_at DESC;
-  `
-  );
+  `, [currentUserId]);
 
   return result.rows;
 };
 
-export const getById = async (postId: number) => {
+export const getById = async (userId: number, postId: number) => {
   const result = await pool.query(
     `
     SELECT p.id, p.content, p.created_at AS "createdAt", u.username,
-           COUNT(DISTINCT l.id) AS "likesCount",
-           COUNT(DISTINCT c.id) AS "commentsCount"
+      COUNT(DISTINCT l.id) AS "likesCount",
+      COUNT(DISTINCT c.id) AS "commentsCount"
+      EXISTS (
+        SELECT 1 FROM likes l2 
+        WHERE l2.post_id = p.id AND l2.user_id = $1
+      ) AS "isLiked"
     FROM posts p
     JOIN users u ON u.id = p.user_id
     LEFT JOIN likes l ON l.post_id = p.id
     LEFT JOIN comments c ON c.post_id = p.id
-    WHERE p.id = $1
+    WHERE p.id = $2
     GROUP BY p.id, u.username
   `,
-    [postId]
+    [userId, postId],
   );
 
   return result.rows[0];
@@ -49,7 +62,7 @@ export const create = async ({
     RETURNING id, content, created_at AS "createdAt", 
       (SELECT username FROM users WHERE users.id = posts.user_id) AS username
     `,
-    [userId, content]
+    [userId, content],
   );
 
   const inserted = result.rows[0];
@@ -61,6 +74,7 @@ export const create = async ({
     username: inserted.username,
     likesCount: 0,
     commentsCount: 0,
+    isLiked: false,
   };
 };
 
@@ -71,7 +85,7 @@ export const remove = async (id: number) => {
     WHERE id = $1
     RETURNING id
   `,
-    [id]
+    [id],
   );
 
   return result.rowCount > 0;

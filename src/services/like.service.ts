@@ -11,7 +11,7 @@ export const likePost = async (userId: number, postId: number) => {
     [userId, postId]
   );
 
-  const post = await getPostById(postId);
+  const post = await getPostById(userId, postId);
 
   return post;
 };
@@ -22,7 +22,7 @@ export const unlikePost = async (userId: number, postId: number) => {
     [userId, postId]
   );
 
-  const post = await getPostById(postId);
+  const post = await getPostById(userId, postId);
 
   return post;
 };

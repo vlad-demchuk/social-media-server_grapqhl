@@ -1,16 +1,18 @@
-import * as postService from "./services/post.service";
-import * as likeService from "./services/like.service";
-import * as commentService from "./services/comment.service";
-import { Resolvers } from "./types";
+import * as postService from './services/post.service';
+import * as likeService from './services/like.service';
+import * as commentService from './services/comment.service';
+import { Resolvers } from './types';
 
 // TODO: get user from context
 // TODO: handle errors
+
+const currentUserId = 1;
 
 export const resolvers: Resolvers = {
   Query: {
     // Posts
     posts: async () => {
-      const posts = await postService.getAll();
+      const posts = await postService.getAll(currentUserId);
 
       return posts;
     },
@@ -27,20 +29,21 @@ export const resolvers: Resolvers = {
       try {
         const post = await postService.create({
           content: args.input.content,
-          userId: 1,
+          userId: currentUserId,
         });
 
         return {
           code: 200,
           success: true,
-          message: "Post successfully created!",
-          post: { ...post, commentsCount2: 12 },
+          message: 'Post successfully created!',
+          post,
         };
       } catch (error) {
         return {
           code: 500,
           success: false,
-          message: `Something went wrong: ${error.extensions.response.body}`,
+          message: `Something went wrong:`,
+          error
         };
       }
     },
@@ -51,51 +54,54 @@ export const resolvers: Resolvers = {
         return {
           code: 200,
           success: true,
-          message: "Post successfully deleted!",
+          message: 'Post successfully deleted!',
           postId: args.postId,
         };
       } catch (error) {
         return {
           code: 500,
           success: false,
-          message: `Something went wrong: ${error.extensions.response.body}`,
+          message: `Something went wrong: `,
+          error
         };
       }
     },
     // Likes
     likePost: async (_, args) => {
       try {
-        const post = await likeService.likePost(1, args.postId);
+        const post = await likeService.likePost(currentUserId, args.postId);
 
         return {
           code: 200,
           success: true,
-          message: "Like successfully created!",
+          message: 'Like successfully created!',
           post,
         };
       } catch (error) {
         return {
           code: 500,
           success: false,
-          message: `Something went wrong: ${error.extensions.response.body}`,
+          message: `Something went wrong: `,
+          error
         };
       }
     },
     unlikePost: async (_, args) => {
       try {
-        const post = await likeService.unlikePost(1, args.postId);
+        const post = await likeService.unlikePost(currentUserId, args.postId);
 
         return {
           code: 200,
           success: true,
-          message: "Like successfully deleted!",
+          message: 'Like successfully deleted!',
           post,
         };
       } catch (error) {
         return {
           code: 500,
           success: false,
-          message: `Something went wrong: ${error.extensions.response.body}`,
+          message: `Something went wrong: `,
+          error
         };
       }
     },
@@ -111,14 +117,15 @@ export const resolvers: Resolvers = {
         return {
           code: 200,
           success: true,
-          message: "Comment successfully created!",
+          message: 'Comment successfully created!',
           comment,
         };
       } catch (error) {
         return {
           code: 500,
           success: false,
-          message: `Something went wrong: ${error.extensions.response.body}`,
+          message: `Something went wrong:`,
+          error
         };
       }
     },
@@ -129,14 +136,15 @@ export const resolvers: Resolvers = {
         return {
           code: 200,
           success: true,
-          message: "Comment successfully deleted!",
+          message: 'Comment successfully deleted!',
           commentId: args.commentId,
         };
       } catch (error) {
         return {
           code: 500,
           success: false,
-          message: `Something went wrong: ${error.extensions.response.body}`,
+          message: `Something went wrong: `,
+          error
         };
       }
     },
