@@ -11,13 +11,22 @@ const currentUserId = 1;
 export const resolvers: Resolvers = {
   Query: {
     // Posts
-    posts: async () => {
+    posts: async (_, __, context) => {
+      console.log('>>>>> context:', context.user);
+
       const posts = await postService.getAll(currentUserId);
 
       return posts;
     },
+    post: async (_, args, context) => {
+      console.log('>>>>> context.user:', context.user);
+      const post = await postService.getById(currentUserId, args.postId);
+
+      return post;
+    },
     // Comments
-    comments: async (_, args) => {
+    comments: async (_, args, context) => {
+      console.log('>>>>> context.user:', context.user);
       const comments = await commentService.getByPostId(args.postId);
 
       return comments;
@@ -25,7 +34,8 @@ export const resolvers: Resolvers = {
   },
   Mutation: {
     // Posts
-    createPost: async (_, args) => {
+    createPost: async (_, args, context) => {
+      console.log('>>>>> context:', context);
       try {
         const post = await postService.create({
           content: args.input.content,
@@ -47,7 +57,8 @@ export const resolvers: Resolvers = {
         };
       }
     },
-    deletePost: async (_, args) => {
+    deletePost: async (_, args, context) => {
+      console.log('>>>>> context.user:', context.user);
       try {
         await postService.remove(args.postId);
 
@@ -67,7 +78,8 @@ export const resolvers: Resolvers = {
       }
     },
     // Likes
-    likePost: async (_, args) => {
+    likePost: async (_, args, context) => {
+      console.log('>>>>> context.user:', context.user);
       try {
         const post = await likeService.likePost(currentUserId, args.postId);
 
@@ -86,7 +98,8 @@ export const resolvers: Resolvers = {
         };
       }
     },
-    unlikePost: async (_, args) => {
+    unlikePost: async (_, args, context) => {
+      console.log('>>>>> context.user:', context.user);
       try {
         const post = await likeService.unlikePost(currentUserId, args.postId);
 
@@ -106,7 +119,8 @@ export const resolvers: Resolvers = {
       }
     },
     // Comments
-    createComment: async (_, args) => {
+    createComment: async (_, args, context) => {
+      console.log('>>>>> context.user:', context.user);
       try {
         const comment = await commentService.create({
           content: args.input.content,
@@ -129,7 +143,8 @@ export const resolvers: Resolvers = {
         };
       }
     },
-    deleteComment: async (_, args) => {
+    deleteComment: async (_, args, context) => {
+      console.log('>>>>> context.user:', context.user);
       try {
         await commentService.remove(args.commentId);
 

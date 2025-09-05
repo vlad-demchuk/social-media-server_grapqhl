@@ -33,7 +33,7 @@ export const getById = async (userId: number, postId: number) => {
     `
     SELECT p.id, p.content, p.created_at AS "createdAt", u.username,
       COUNT(DISTINCT l.id) AS "likesCount",
-      COUNT(DISTINCT c.id) AS "commentsCount"
+      COUNT(DISTINCT c.id) AS "commentsCount",
       EXISTS (
         SELECT 1 FROM likes l2 
         WHERE l2.post_id = p.id AND l2.user_id = $1
