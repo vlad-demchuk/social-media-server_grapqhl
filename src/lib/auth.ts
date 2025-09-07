@@ -19,6 +19,10 @@ export const auth = betterAuth({
     database: {
       useNumberId: true,
     },
+    crossSubDomainCookies: {
+      enabled: true,
+      domain: 'http://localhost:3000', // your domain
+    },
   },
   user: {
     modelName: 'users',
@@ -34,13 +38,6 @@ export const auth = betterAuth({
       createdAt: 'created_at',
       updatedAt: 'updated_at',
       expiresAt: 'expires_at',
-    },
-    cookieCache: {
-      enabled: true,
-      maxAge: 60 * 60 * 24 * 7,
-      sameSite: 'none',
-      secure: process.env.NODE_ENV === 'production' ? true : false,
-      httpOnly: true,
     },
   },
   account: {
