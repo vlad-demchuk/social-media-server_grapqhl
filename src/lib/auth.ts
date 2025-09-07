@@ -1,6 +1,7 @@
 import { betterAuth } from 'better-auth';
 import { Pool } from 'pg';
 import 'dotenv/config';
+import { nextCookies } from 'better-auth/next-js';
 
 export const auth = betterAuth({
   appName: 'Social Media',
@@ -11,6 +12,7 @@ export const auth = betterAuth({
   emailAndPassword: {
     enabled: true,
   },
+  plugins: [nextCookies()],
   trustedOrigins: ['http://localhost:3000'],
   advanced: {
     allowedOrigins: ['http://localhost:3000'],
@@ -33,6 +35,10 @@ export const auth = betterAuth({
       updatedAt: 'updated_at',
       expiresAt: 'expires_at',
     },
+    cookieCache: {
+      enabled: true,
+      maxAge: 60 * 60 * 24 * 7,
+    },
   },
   account: {
     modelName: 'accounts',
@@ -51,11 +57,11 @@ export const auth = betterAuth({
   },
 });
 
-export type Session = Omit<typeof auth.$Infer.Session.session, "id" | "userId"> & {
+export type Session = Omit<typeof auth.$Infer.Session.session, 'id' | 'userId'> & {
   id: number;
   userId: number;
 };
 
-export type User = Omit<typeof auth.$Infer.Session.user, "id"> & {
+export type User = Omit<typeof auth.$Infer.Session.user, 'id'> & {
   id: number;
 };
