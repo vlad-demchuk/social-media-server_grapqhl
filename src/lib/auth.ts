@@ -19,10 +19,6 @@ export const auth = betterAuth({
     database: {
       useNumberId: true,
     },
-    crossSubDomainCookies: {
-      enabled: true,
-      domain: 'http://localhost:3000', // your domain
-    },
     defaultCookieAttributes: {
       sameSite: 'none',
       secure: true,
