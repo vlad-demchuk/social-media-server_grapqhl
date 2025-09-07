@@ -2,31 +2,38 @@ import * as postService from './services/post.service';
 import * as likeService from './services/like.service';
 import * as commentService from './services/comment.service';
 import { Resolvers } from './types';
+import { GraphQLError } from 'graphql/error';
 
 // TODO: get user from context
 // TODO: handle errors
-
-const currentUserId = 1;
 
 export const resolvers: Resolvers = {
   Query: {
     // Posts
     posts: async (_, __, context) => {
-      console.log('>>>>> context:', context.user);
+      if (!context.user) {
+        throw new GraphQLError('Authentication required', {
+          extensions: { code: 'UNAUTHENTICATED' },
+        });
+      }
 
-      const posts = await postService.getAll(currentUserId);
+      const posts = await postService.getAll(context.user.id);
 
       return posts;
     },
     post: async (_, args, context) => {
-      console.log('>>>>> context.user:', context.user);
-      const post = await postService.getById(currentUserId, args.postId);
+      if (!context.user) {
+        throw new GraphQLError('Authentication required', {
+          extensions: { code: 'UNAUTHENTICATED' },
+        });
+      }
+
+      const post = await postService.getById(context.user.id, args.postId);
 
       return post;
     },
     // Comments
-    comments: async (_, args, context) => {
-      console.log('>>>>> context.user:', context.user);
+    comments: async (_, args) => {
       const comments = await commentService.getByPostId(args.postId);
 
       return comments;
@@ -39,7 +46,7 @@ export const resolvers: Resolvers = {
       try {
         const post = await postService.create({
           content: args.input.content,
-          userId: currentUserId,
+          userId: Number(context.user.id),
         });
 
         return {
@@ -53,7 +60,7 @@ export const resolvers: Resolvers = {
           code: 500,
           success: false,
           message: `Something went wrong:`,
-          error
+          error,
         };
       }
     },
@@ -73,15 +80,20 @@ export const resolvers: Resolvers = {
           code: 500,
           success: false,
           message: `Something went wrong: `,
-          error
+          error,
         };
       }
     },
     // Likes
     likePost: async (_, args, context) => {
-      console.log('>>>>> context.user:', context.user);
+      if (!context.user) {
+        throw new GraphQLError('Authentication required', {
+          extensions: { code: 'UNAUTHENTICATED' },
+        });
+      }
+
       try {
-        const post = await likeService.likePost(currentUserId, args.postId);
+        const post = await likeService.likePost(context.user.id, args.postId);
 
         return {
           code: 200,
@@ -94,14 +106,19 @@ export const resolvers: Resolvers = {
           code: 500,
           success: false,
           message: `Something went wrong: `,
-          error
+          error,
         };
       }
     },
     unlikePost: async (_, args, context) => {
-      console.log('>>>>> context.user:', context.user);
+      if (!context.user) {
+        throw new GraphQLError('Authentication required', {
+          extensions: { code: 'UNAUTHENTICATED' },
+        });
+      }
+
       try {
-        const post = await likeService.unlikePost(currentUserId, args.postId);
+        const post = await likeService.unlikePost(context.user.id, args.postId);
 
         return {
           code: 200,
@@ -114,17 +131,16 @@ export const resolvers: Resolvers = {
           code: 500,
           success: false,
           message: `Something went wrong: `,
-          error
+          error,
         };
       }
     },
     // Comments
     createComment: async (_, args, context) => {
-      console.log('>>>>> context.user:', context.user);
       try {
         const comment = await commentService.create({
           content: args.input.content,
-          userId: 1,
+          userId: context.user.id,
           postId: args.input.postId,
         });
 
@@ -139,7 +155,7 @@ export const resolvers: Resolvers = {
           code: 500,
           success: false,
           message: `Something went wrong:`,
-          error
+          error,
         };
       }
     },
@@ -159,7 +175,7 @@ export const resolvers: Resolvers = {
           code: 500,
           success: false,
           message: `Something went wrong: `,
-          error
+          error,
         };
       }
     },
