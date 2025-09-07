@@ -23,6 +23,11 @@ export const auth = betterAuth({
       enabled: true,
       domain: 'http://localhost:3000', // your domain
     },
+    defaultCookieAttributes: {
+      sameSite: 'none',
+      secure: true,
+      httpOnly: true,
+    },
   },
   user: {
     modelName: 'users',
