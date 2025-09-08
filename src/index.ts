@@ -1,6 +1,7 @@
 import express from 'express';
 import http from 'http';
 import cors from 'cors';
+import 'dotenv/config';
 
 import { ApolloServer } from '@apollo/server';
 import { ApolloServerPluginDrainHttpServer } from '@apollo/server/plugin/drainHttpServer';
@@ -22,7 +23,7 @@ const PORT = 4000;
 
   app.use(
     cors({
-      origin: 'http://localhost:3000', // Replace with your frontend's origin
+      origin: process.env.FRONTEND_URL, // Replace with your frontend's origin
       methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'], // Specify allowed HTTP methods
       credentials: true, // Allow credentials (cookies, authorization headers, etc.)
       allowedHeaders: ['Content-Type', 'Authorization', 'Apollo-Require-Preflight'], // Add Apollo headers

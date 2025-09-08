@@ -1,7 +1,6 @@
 import { betterAuth } from 'better-auth';
 import { Pool } from 'pg';
 import 'dotenv/config';
-import { nextCookies } from 'better-auth/next-js';
 
 export const auth = betterAuth({
   appName: 'Social Media',
@@ -12,10 +11,9 @@ export const auth = betterAuth({
   emailAndPassword: {
     enabled: true,
   },
-  plugins: [nextCookies()],
-  trustedOrigins: ['http://localhost:3000'],
+  trustedOrigins: ['http://localhost:3000', process.env.FRONTEND_URL],
   advanced: {
-    allowedOrigins: ['http://localhost:3000'],
+    allowedOrigins: ['http://localhost:3000', process.env.FRONTEND_URL],
     database: {
       useNumberId: true,
     },
@@ -23,7 +21,9 @@ export const auth = betterAuth({
       sameSite: 'none',
       secure: true,
       httpOnly: true,
+      path: '/',
     },
+    useSecureCookies: true,
   },
   user: {
     modelName: 'users',
