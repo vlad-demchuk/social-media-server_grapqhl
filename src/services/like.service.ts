@@ -1,5 +1,5 @@
-import { pool } from "../db";
-import { getById as getPostById } from "./post.service";
+import { pool } from '../db';
+import { getById as getPostById } from './post.service';
 
 export const likePost = async (userId: number, postId: number) => {
   await pool.query(
@@ -8,7 +8,7 @@ export const likePost = async (userId: number, postId: number) => {
     VALUES ($1, $2)
     ON CONFLICT (user_id, post_id) DO NOTHING
     `,
-    [userId, postId]
+    [userId, postId],
   );
 
   const post = await getPostById(userId, postId);
@@ -19,7 +19,7 @@ export const likePost = async (userId: number, postId: number) => {
 export const unlikePost = async (userId: number, postId: number) => {
   await pool.query(
     `DELETE FROM likes WHERE user_id = $1 AND post_id = $2`,
-    [userId, postId]
+    [userId, postId],
   );
 
   const post = await getPostById(userId, postId);

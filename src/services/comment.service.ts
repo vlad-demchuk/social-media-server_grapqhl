@@ -1,5 +1,5 @@
-import { CreateCommentInput } from "../types";
-import { pool } from "../db";
+import { CreateCommentInput } from '../types';
+import { pool } from '../db';
 
 export const getByPostId = async (postId: number) => {
   const result = await pool.query(
@@ -14,16 +14,16 @@ export const getByPostId = async (postId: number) => {
       WHERE comments.post_id = $1
       ORDER BY comments.created_at ASC
     `,
-    [postId]
+    [postId],
   );
 
   return result.rows;
-}
+};
 
 export const create = async ({
   content,
   userId,
-  postId
+  postId,
 }: CreateCommentInput & { userId: number }) => {
   const result = await pool.query(
     `
@@ -32,7 +32,7 @@ export const create = async ({
       RETURNING id, content, created_at AS "createdAt", 
         (SELECT username FROM users WHERE users.id = $2) AS username
     `,
-    [content, userId, postId]
+    [content, userId, postId],
   );
 
   const inserted = result.rows[0];
@@ -52,7 +52,7 @@ export const remove = async (id: number) => {
     WHERE id = $1
     RETURNING id
   `,
-    [id]
+    [id],
   );
 
   return result.rowCount > 0;

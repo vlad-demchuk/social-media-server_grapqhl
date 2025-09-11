@@ -56,8 +56,6 @@ const PORT = 4000;
           headers: fromNodeHeaders(req.headers),
         });
 
-        console.log('>>>>> session in graphql:', session);
-
         return {
           user: session?.user || null,
           session,

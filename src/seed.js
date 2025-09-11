@@ -1,5 +1,5 @@
-import { Pool } from "pg";
-import "dotenv/config";
+import { Pool } from 'pg';
+import 'dotenv/config';
 
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
@@ -8,7 +8,7 @@ const pool = new Pool({
 
 async function seed() {
   try {
-    console.log("🌱 Seeding database...");
+    console.log('🌱 Seeding database...');
 
     // Ensure clean state (CAREFUL in production!)
     await pool.query(`
@@ -90,9 +90,9 @@ async function seed() {
       (10, 1, NOW());
     `);
 
-    console.log("✅ Seeding completed!");
+    console.log('✅ Seeding completed!');
   } catch (err) {
-    console.error("❌ Error seeding database:", err);
+    console.error('❌ Error seeding database:', err);
   } finally {
     await pool.end();
   }
