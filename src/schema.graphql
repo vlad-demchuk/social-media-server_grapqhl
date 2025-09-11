@@ -105,6 +105,8 @@ type Query {
   # Posts
   "List all posts"
   posts: [Post!]!
+  "List user posts"
+  userPosts(userName: String!): [Post!]!
   "Single post"
   post(postId: Int!): Post!
   # Comments

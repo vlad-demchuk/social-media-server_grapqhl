@@ -178,6 +178,8 @@ export type Query = {
   post: Post;
   /** List all posts */
   posts: Array<Post>;
+  /** List user posts */
+  userPosts: Array<Post>;
 };
 
 
@@ -190,6 +192,12 @@ export type QueryCommentsArgs = {
 /** Queries */
 export type QueryPostArgs = {
   postId: Scalars['Int']['input'];
+};
+
+
+/** Queries */
+export type QueryUserPostsArgs = {
+  userName: Scalars['String']['input'];
 };
 
 
@@ -375,6 +383,7 @@ export type QueryResolvers<ContextType = Context, ParentType extends ResolversPa
   comments?: Resolver<Array<ResolversTypes['Comment']>, ParentType, ContextType, RequireFields<QueryCommentsArgs, 'postId'>>;
   post?: Resolver<ResolversTypes['Post'], ParentType, ContextType, RequireFields<QueryPostArgs, 'postId'>>;
   posts?: Resolver<Array<ResolversTypes['Post']>, ParentType, ContextType>;
+  userPosts?: Resolver<Array<ResolversTypes['Post']>, ParentType, ContextType, RequireFields<QueryUserPostsArgs, 'userName'>>;
 };
 
 export type Resolvers<ContextType = Context> = {

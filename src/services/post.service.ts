@@ -28,6 +28,34 @@ export const getAll = async (currentUserId: number) => {
   return result.rows;
 };
 
+export const getPostsByUserName = async (currentUserId: number, userName: string) => {
+  const result = await pool.query(
+    `
+    SELECT 
+      p.id, 
+      p.content, 
+      p.created_at AS "createdAt", 
+      u.username,
+      COUNT(DISTINCT l.id) AS "likesCount",
+      COUNT(DISTINCT c.id) AS "commentsCount",
+      EXISTS (
+        SELECT 1 
+        FROM likes l2 
+        WHERE l2.post_id = p.id 
+          AND l2.user_id = $1
+      ) AS "isLiked"
+    FROM posts p
+    JOIN users u ON u.id = p.user_id
+    LEFT JOIN likes l ON l.post_id = p.id
+    LEFT JOIN comments c ON c.post_id = p.id
+    WHERE u.username = $2
+    GROUP BY p.id, u.username
+    ORDER BY p.created_at DESC;
+  `, [currentUserId, userName]);
+
+  return result.rows;
+};
+
 export const getById = async (userId: number, postId: number) => {
   const result = await pool.query(
     `
@@ -50,6 +78,8 @@ export const getById = async (userId: number, postId: number) => {
 
   return result.rows[0];
 };
+
+
 
 export const create = async ({
   content,

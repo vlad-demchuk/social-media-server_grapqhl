@@ -21,6 +21,17 @@ export const resolvers: Resolvers = {
 
       return posts;
     },
+    userPosts: async (_, args, context) => {
+      if (!context.user) {
+        throw new GraphQLError('Authentication required', {
+          extensions: { code: 'UNAUTHENTICATED' },
+        });
+      }
+
+      const posts = await postService.getPostsByUserName(context.user.id, args.userName);
+
+      return posts;
+    },
     post: async (_, args, context) => {
       if (!context.user) {
         throw new GraphQLError('Authentication required', {
@@ -42,7 +53,6 @@ export const resolvers: Resolvers = {
   Mutation: {
     // Posts
     createPost: async (_, args, context) => {
-      console.log('>>>>> context:', context);
       try {
         const post = await postService.create({
           content: args.input.content,
@@ -64,8 +74,7 @@ export const resolvers: Resolvers = {
         };
       }
     },
-    deletePost: async (_, args, context) => {
-      console.log('>>>>> context.user:', context.user);
+    deletePost: async (_, args) => {
       try {
         await postService.remove(args.postId);
 
@@ -159,8 +168,7 @@ export const resolvers: Resolvers = {
         };
       }
     },
-    deleteComment: async (_, args, context) => {
-      console.log('>>>>> context.user:', context.user);
+    deleteComment: async (_, args) => {
       try {
         await commentService.remove(args.commentId);
 
