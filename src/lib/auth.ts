@@ -31,6 +31,7 @@ export const auth = betterAuth({
       name: 'username',
       createdAt: 'created_at',
       updatedAt: 'updated_at',
+      emailVerified: 'email_verified',
     },
   },
   session: {
@@ -39,6 +40,9 @@ export const auth = betterAuth({
       createdAt: 'created_at',
       updatedAt: 'updated_at',
       expiresAt: 'expires_at',
+      ipAddress: 'ip_address',
+      userAgent: 'user_agent',
+      userId: 'user_id'
     },
   },
   account: {
@@ -46,6 +50,14 @@ export const auth = betterAuth({
     fields: {
       createdAt: 'created_at',
       updatedAt: 'updated_at',
+      accountId: 'account_id',
+      providerId: 'provider_id',
+      accessToken: 'access_token',
+      accessTokenExpiresAt: 'access_token_expires_at',
+      refreshToken: 'refresh_token',
+      refreshTokenExpiresAt: 'refresh_token_expires_at',
+      idToken: 'id_token',
+      userId: 'user_id',
     },
   },
   verification: {
