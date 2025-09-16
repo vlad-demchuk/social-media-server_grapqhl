@@ -1,4 +1,4 @@
-import { pool } from '../db';
+import { pool } from '../db/db';
 import { CreatePostInput } from '../types';
 
 export const getAll = async (currentUserId: number) => {

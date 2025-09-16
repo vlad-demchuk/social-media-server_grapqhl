@@ -1,4 +1,4 @@
-import { pool } from '../db';
+import { pool } from '../db/db';
 import { getById as getPostById } from './post.service';
 
 export const likePost = async (userId: number, postId: number) => {
