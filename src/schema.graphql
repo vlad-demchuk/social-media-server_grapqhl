@@ -100,6 +100,31 @@ type DeleteCommentResponse {
   commentId: Int
 }
 
+"Conversations"
+type ConversationParticipant {
+  id: Int!
+  username: String!
+  image: String
+}
+
+type Conversation {
+  id: Int!
+  type: String!
+  name: String
+  createdAt: DateTime!
+  participants: [ConversationParticipant!]!
+  lastMessage: Message
+}
+
+"Messages"
+type Message {
+  id: Int!
+  content: String!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  sender: ConversationParticipant!
+}
+
 "Queries"
 type Query {
   # Posts
@@ -112,6 +137,12 @@ type Query {
   # Comments
   "List comments for a specific post"
   comments(postId: Int!): [Comment!]!
+  # Conversations
+  "List all user conversations"
+  conversations: [Conversation!]!
+  # Messages
+  "List all conversation messages"
+  conversationMessages(conversationId: Int!): [Message!]!
 }
 
 # Mutations

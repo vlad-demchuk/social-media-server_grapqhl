@@ -31,6 +31,24 @@ export type Comment = {
   username: Scalars['String']['output'];
 };
 
+export type Conversation = {
+  __typename?: 'Conversation';
+  createdAt: Scalars['DateTime']['output'];
+  id: Scalars['Int']['output'];
+  lastMessage?: Maybe<Message>;
+  name?: Maybe<Scalars['String']['output']>;
+  participants: Array<ConversationParticipant>;
+  type: Scalars['String']['output'];
+};
+
+/** Conversations */
+export type ConversationParticipant = {
+  __typename?: 'ConversationParticipant';
+  id: Scalars['Int']['output'];
+  image?: Maybe<Scalars['String']['output']>;
+  username: Scalars['String']['output'];
+};
+
 export type CreateCommentInput = {
   /** Text body of the comment */
   content: Scalars['String']['input'];
@@ -104,6 +122,16 @@ export type LikePostResponse = {
   success: Scalars['Boolean']['output'];
 };
 
+/** Messages */
+export type Message = {
+  __typename?: 'Message';
+  content: Scalars['String']['output'];
+  createdAt: Scalars['DateTime']['output'];
+  id: Scalars['Int']['output'];
+  sender: ConversationParticipant;
+  updatedAt: Scalars['DateTime']['output'];
+};
+
 export type Mutation = {
   __typename?: 'Mutation';
   /** Create a new comment on a post */
@@ -174,6 +202,10 @@ export type Query = {
   __typename?: 'Query';
   /** List comments for a specific post */
   comments: Array<Comment>;
+  /** List all conversation messages */
+  conversationMessages: Array<Message>;
+  /** List all user conversations */
+  conversations: Array<Conversation>;
   /** Single post */
   post: Post;
   /** List all posts */
@@ -186,6 +218,12 @@ export type Query = {
 /** Queries */
 export type QueryCommentsArgs = {
   postId: Scalars['Int']['input'];
+};
+
+
+/** Queries */
+export type QueryConversationMessagesArgs = {
+  conversationId: Scalars['Int']['input'];
 };
 
 
@@ -273,6 +311,8 @@ export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs
 export type ResolversTypes = {
   Boolean: ResolverTypeWrapper<Scalars['Boolean']['output']>;
   Comment: ResolverTypeWrapper<Comment>;
+  Conversation: ResolverTypeWrapper<Conversation>;
+  ConversationParticipant: ResolverTypeWrapper<ConversationParticipant>;
   CreateCommentInput: CreateCommentInput;
   CreateCommentResponse: ResolverTypeWrapper<CreateCommentResponse>;
   CreatePostInput: CreatePostInput;
@@ -282,6 +322,7 @@ export type ResolversTypes = {
   DeletePostResponse: ResolverTypeWrapper<DeletePostResponse>;
   Int: ResolverTypeWrapper<Scalars['Int']['output']>;
   LikePostResponse: ResolverTypeWrapper<LikePostResponse>;
+  Message: ResolverTypeWrapper<Message>;
   Mutation: ResolverTypeWrapper<{}>;
   Post: ResolverTypeWrapper<Post>;
   Query: ResolverTypeWrapper<{}>;
@@ -292,6 +333,8 @@ export type ResolversTypes = {
 export type ResolversParentTypes = {
   Boolean: Scalars['Boolean']['output'];
   Comment: Comment;
+  Conversation: Conversation;
+  ConversationParticipant: ConversationParticipant;
   CreateCommentInput: CreateCommentInput;
   CreateCommentResponse: CreateCommentResponse;
   CreatePostInput: CreatePostInput;
@@ -301,6 +344,7 @@ export type ResolversParentTypes = {
   DeletePostResponse: DeletePostResponse;
   Int: Scalars['Int']['output'];
   LikePostResponse: LikePostResponse;
+  Message: Message;
   Mutation: {};
   Post: Post;
   Query: {};
@@ -311,6 +355,23 @@ export type CommentResolvers<ContextType = Context, ParentType extends Resolvers
   content?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   createdAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  username?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type ConversationResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Conversation'] = ResolversParentTypes['Conversation']> = {
+  createdAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  lastMessage?: Resolver<Maybe<ResolversTypes['Message']>, ParentType, ContextType>;
+  name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  participants?: Resolver<Array<ResolversTypes['ConversationParticipant']>, ParentType, ContextType>;
+  type?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type ConversationParticipantResolvers<ContextType = Context, ParentType extends ResolversParentTypes['ConversationParticipant'] = ResolversParentTypes['ConversationParticipant']> = {
+  id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  image?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   username?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
@@ -359,6 +420,15 @@ export type LikePostResponseResolvers<ContextType = Context, ParentType extends 
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
+export type MessageResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Message'] = ResolversParentTypes['Message']> = {
+  content?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  createdAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  sender?: Resolver<ResolversTypes['ConversationParticipant'], ParentType, ContextType>;
+  updatedAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
 export type MutationResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {
   createComment?: Resolver<ResolversTypes['CreateCommentResponse'], ParentType, ContextType, RequireFields<MutationCreateCommentArgs, 'input'>>;
   createPost?: Resolver<ResolversTypes['CreatePostResponse'], ParentType, ContextType, RequireFields<MutationCreatePostArgs, 'input'>>;
@@ -381,6 +451,8 @@ export type PostResolvers<ContextType = Context, ParentType extends ResolversPar
 
 export type QueryResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
   comments?: Resolver<Array<ResolversTypes['Comment']>, ParentType, ContextType, RequireFields<QueryCommentsArgs, 'postId'>>;
+  conversationMessages?: Resolver<Array<ResolversTypes['Message']>, ParentType, ContextType, RequireFields<QueryConversationMessagesArgs, 'conversationId'>>;
+  conversations?: Resolver<Array<ResolversTypes['Conversation']>, ParentType, ContextType>;
   post?: Resolver<ResolversTypes['Post'], ParentType, ContextType, RequireFields<QueryPostArgs, 'postId'>>;
   posts?: Resolver<Array<ResolversTypes['Post']>, ParentType, ContextType>;
   userPosts?: Resolver<Array<ResolversTypes['Post']>, ParentType, ContextType, RequireFields<QueryUserPostsArgs, 'userName'>>;
@@ -388,12 +460,15 @@ export type QueryResolvers<ContextType = Context, ParentType extends ResolversPa
 
 export type Resolvers<ContextType = Context> = {
   Comment?: CommentResolvers<ContextType>;
+  Conversation?: ConversationResolvers<ContextType>;
+  ConversationParticipant?: ConversationParticipantResolvers<ContextType>;
   CreateCommentResponse?: CreateCommentResponseResolvers<ContextType>;
   CreatePostResponse?: CreatePostResponseResolvers<ContextType>;
   DateTime?: GraphQLScalarType;
   DeleteCommentResponse?: DeleteCommentResponseResolvers<ContextType>;
   DeletePostResponse?: DeletePostResponseResolvers<ContextType>;
   LikePostResponse?: LikePostResponseResolvers<ContextType>;
+  Message?: MessageResolvers<ContextType>;
   Mutation?: MutationResolvers<ContextType>;
   Post?: PostResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
