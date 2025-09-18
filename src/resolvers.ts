@@ -1,7 +1,8 @@
 import * as postService from './services/post.service';
 import * as likeService from './services/like.service';
 import * as commentService from './services/comment.service';
-import * as conversationService from './services/conversation.service'
+import * as conversationService from './services/conversation.service';
+import * as messageService from './services/message.service';
 import { Resolvers } from './types';
 import { GraphQLError } from 'graphql/error';
 
@@ -70,10 +71,10 @@ export const resolvers: Resolvers = {
         });
       }
 
-      const messages = await conversationService.getConversationMessages(args.conversationId);
+      const messages = await messageService.getConversationMessages(args.conversationId);
 
       return messages;
-    }
+    },
   },
   Mutation: {
     // Posts
@@ -171,6 +172,12 @@ export const resolvers: Resolvers = {
     },
     // Comments
     createComment: async (_, args, context) => {
+      if (!context.user) {
+        throw new GraphQLError('Authentication required', {
+          extensions: { code: 'UNAUTHENTICATED' },
+        });
+      }
+
       try {
         const comment = await commentService.create({
           content: args.input.content,
@@ -193,7 +200,13 @@ export const resolvers: Resolvers = {
         };
       }
     },
-    deleteComment: async (_, args) => {
+    deleteComment: async (_, args, context) => {
+      if (!context.user) {
+        throw new GraphQLError('Authentication required', {
+          extensions: { code: 'UNAUTHENTICATED' },
+        });
+      }
+
       try {
         await commentService.remove(args.commentId);
 
@@ -202,6 +215,63 @@ export const resolvers: Resolvers = {
           success: true,
           message: 'Comment successfully deleted!',
           commentId: args.commentId,
+        };
+      } catch (error) {
+        return {
+          code: 500,
+          success: false,
+          message: `Something went wrong: `,
+          error,
+        };
+      }
+    },
+    // Conversations
+    createConversation: async (_, args, context) => {
+      if (!context.user) {
+        throw new GraphQLError('Authentication required', {
+          extensions: { code: 'UNAUTHENTICATED' },
+        });
+      }
+
+      try {
+        const conversationId = await conversationService.createDirect(context.user.id, args.userId);
+
+        return {
+          code: 200,
+          success: true,
+          message: 'Conversation successfully created!',
+          conversationId,
+        };
+      } catch (error) {
+        return {
+          code: 500,
+          success: false,
+          message: `Something went wrong: `,
+          error,
+        };
+      }
+    },
+    // Messages
+    // @ts-ignore
+    createMessage: async (_, args, context) => {
+      if (!context.user) {
+        throw new GraphQLError('Authentication required', {
+          extensions: { code: 'UNAUTHENTICATED' },
+        });
+      }
+
+      try {
+        const message = await messageService.create({
+          conversationId: args.conversationId,
+          senderId: context.user.id,
+          content: args.content,
+        });
+
+        return {
+          code: 200,
+          success: true,
+          message: 'Conversation successfully created!',
+          createdMessage: message,
         };
       } catch (error) {
         return {

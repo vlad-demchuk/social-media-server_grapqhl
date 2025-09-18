@@ -59,24 +59,39 @@ ORDER BY
   return result.rows;
 }
 
-export const getConversationMessages = async (conversationId: number) => {
-  const result = await pool.query(`
-      SELECT m.id,
-             m.conversation_id AS "conversationId",
-             m.content,
-             m.created_at      AS "createdAt",
-             m.updated_at      AS "updatedAt",
-             json_build_object(
-                     'id', u.id,
-                     'username', u.username,
-                     'image', u.image
-             )                 AS sender
-      FROM messages m
-               LEFT JOIN users u ON u.id = m.sender_id
-      WHERE m.conversation_id = $1
-      ORDER BY m.created_at ASC 
-      -- LIMIT $2 OFFSET $3;
-  `, [conversationId]);
+export const createDirect = async (currentUserId: number, secondUserId: number) => {
+  // Check if conversation exists
+  const existing = await pool.query(
+    `
+        SELECT c.id
+        FROM conversations c
+                 JOIN conversation_participants cp1 ON cp1.conversation_id = c.id
+                 JOIN conversation_participants cp2 ON cp2.conversation_id = c.id
+        WHERE c.type = 'direct'
+          AND cp1.user_id = $1
+          AND cp2.user_id = $2 LIMIT 1
+    `,
+    [currentUserId, secondUserId],
+  );
 
-  return result.rows;
+  if (existing.rows.length > 0) {
+    return existing.rows[0].id;
+  }
+
+  // Create new
+  const conversationRes = await pool.query(
+    `INSERT INTO conversations (type)
+     VALUES ('direct') RETURNING id`,
+  );
+
+  const conversationId = conversationRes.rows[0].id;
+
+  await pool.query(
+    `INSERT INTO conversation_participants (conversation_id, user_id)
+     VALUES ($1, $2),
+            ($1, $3)`,
+    [conversationId, currentUserId, secondUserId],
+  );
+
+  return conversationId;
 };
