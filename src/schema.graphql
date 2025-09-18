@@ -116,6 +116,17 @@ type Conversation {
   lastMessage: Message
 }
 
+type CreateConversationResponse {
+  "HTTP-like status code"
+  code: Int!
+  "Indicates whether the operation succeeded"
+  success: Boolean!
+  "Human-readable status message"
+  message: String!
+  "The created conversation id, if successful"
+  conversationId: Int
+}
+
 "Messages"
 type Message {
   id: Int!
@@ -123,6 +134,24 @@ type Message {
   createdAt: DateTime!
   updatedAt: DateTime!
   sender: ConversationParticipant!
+}
+
+type CreatedMessage {
+  id: Int!
+  content: String!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+type CreateMessageResponse {
+  "HTTP-like status code"
+  code: Int!
+  "Indicates whether the operation succeeded"
+  success: Boolean!
+  "Human-readable status message"
+  message: String!
+  "The created message, if successful"
+  createdMessage: CreatedMessage
 }
 
 "Queries"
@@ -162,4 +191,10 @@ type Mutation {
   createComment(input: CreateCommentInput!): CreateCommentResponse!
   "Delete a comment by its identifier"
   deleteComment(commentId: Int!): DeleteCommentResponse!
+  # Conversations
+  "Create a new conversation"
+  createConversation(userId: Int!): CreateConversationResponse!
+  # Messages
+  "Create a new conversation message"
+  createMessage(conversationId: Int!, content: String!): CreateMessageResponse!
 }

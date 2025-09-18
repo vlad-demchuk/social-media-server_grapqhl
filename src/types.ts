@@ -68,6 +68,30 @@ export type CreateCommentResponse = {
   success: Scalars['Boolean']['output'];
 };
 
+export type CreateConversationResponse = {
+  __typename?: 'CreateConversationResponse';
+  /** HTTP-like status code */
+  code: Scalars['Int']['output'];
+  /** The created conversation id, if successful */
+  conversationId?: Maybe<Scalars['Int']['output']>;
+  /** Human-readable status message */
+  message: Scalars['String']['output'];
+  /** Indicates whether the operation succeeded */
+  success: Scalars['Boolean']['output'];
+};
+
+export type CreateMessageResponse = {
+  __typename?: 'CreateMessageResponse';
+  /** HTTP-like status code */
+  code: Scalars['Int']['output'];
+  /** The created message, if successful */
+  createdMessage?: Maybe<CreatedMessage>;
+  /** Human-readable status message */
+  message: Scalars['String']['output'];
+  /** Indicates whether the operation succeeded */
+  success: Scalars['Boolean']['output'];
+};
+
 export type CreatePostInput = {
   /** Text body for the new post */
   content: Scalars['String']['input'];
@@ -83,6 +107,14 @@ export type CreatePostResponse = {
   post?: Maybe<Post>;
   /** Indicates whether the operation succeeded */
   success: Scalars['Boolean']['output'];
+};
+
+export type CreatedMessage = {
+  __typename?: 'CreatedMessage';
+  content: Scalars['String']['output'];
+  createdAt: Scalars['DateTime']['output'];
+  id: Scalars['Int']['output'];
+  updatedAt: Scalars['DateTime']['output'];
 };
 
 export type DeleteCommentResponse = {
@@ -136,6 +168,10 @@ export type Mutation = {
   __typename?: 'Mutation';
   /** Create a new comment on a post */
   createComment: CreateCommentResponse;
+  /** Create a new conversation */
+  createConversation: CreateConversationResponse;
+  /** Create a new conversation message */
+  createMessage: CreateMessageResponse;
   /** Create a new post */
   createPost: CreatePostResponse;
   /** Delete a comment by its identifier */
@@ -151,6 +187,17 @@ export type Mutation = {
 
 export type MutationCreateCommentArgs = {
   input: CreateCommentInput;
+};
+
+
+export type MutationCreateConversationArgs = {
+  userId: Scalars['Int']['input'];
+};
+
+
+export type MutationCreateMessageArgs = {
+  content: Scalars['String']['input'];
+  conversationId: Scalars['Int']['input'];
 };
 
 
@@ -315,8 +362,11 @@ export type ResolversTypes = {
   ConversationParticipant: ResolverTypeWrapper<ConversationParticipant>;
   CreateCommentInput: CreateCommentInput;
   CreateCommentResponse: ResolverTypeWrapper<CreateCommentResponse>;
+  CreateConversationResponse: ResolverTypeWrapper<CreateConversationResponse>;
+  CreateMessageResponse: ResolverTypeWrapper<CreateMessageResponse>;
   CreatePostInput: CreatePostInput;
   CreatePostResponse: ResolverTypeWrapper<CreatePostResponse>;
+  CreatedMessage: ResolverTypeWrapper<CreatedMessage>;
   DateTime: ResolverTypeWrapper<Scalars['DateTime']['output']>;
   DeleteCommentResponse: ResolverTypeWrapper<DeleteCommentResponse>;
   DeletePostResponse: ResolverTypeWrapper<DeletePostResponse>;
@@ -337,8 +387,11 @@ export type ResolversParentTypes = {
   ConversationParticipant: ConversationParticipant;
   CreateCommentInput: CreateCommentInput;
   CreateCommentResponse: CreateCommentResponse;
+  CreateConversationResponse: CreateConversationResponse;
+  CreateMessageResponse: CreateMessageResponse;
   CreatePostInput: CreatePostInput;
   CreatePostResponse: CreatePostResponse;
+  CreatedMessage: CreatedMessage;
   DateTime: Scalars['DateTime']['output'];
   DeleteCommentResponse: DeleteCommentResponse;
   DeletePostResponse: DeletePostResponse;
@@ -384,11 +437,35 @@ export type CreateCommentResponseResolvers<ContextType = Context, ParentType ext
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
+export type CreateConversationResponseResolvers<ContextType = Context, ParentType extends ResolversParentTypes['CreateConversationResponse'] = ResolversParentTypes['CreateConversationResponse']> = {
+  code?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  conversationId?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  message?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  success?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type CreateMessageResponseResolvers<ContextType = Context, ParentType extends ResolversParentTypes['CreateMessageResponse'] = ResolversParentTypes['CreateMessageResponse']> = {
+  code?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  createdMessage?: Resolver<Maybe<ResolversTypes['CreatedMessage']>, ParentType, ContextType>;
+  message?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  success?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
 export type CreatePostResponseResolvers<ContextType = Context, ParentType extends ResolversParentTypes['CreatePostResponse'] = ResolversParentTypes['CreatePostResponse']> = {
   code?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   message?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   post?: Resolver<Maybe<ResolversTypes['Post']>, ParentType, ContextType>;
   success?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type CreatedMessageResolvers<ContextType = Context, ParentType extends ResolversParentTypes['CreatedMessage'] = ResolversParentTypes['CreatedMessage']> = {
+  content?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  createdAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  updatedAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -431,6 +508,8 @@ export type MessageResolvers<ContextType = Context, ParentType extends Resolvers
 
 export type MutationResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {
   createComment?: Resolver<ResolversTypes['CreateCommentResponse'], ParentType, ContextType, RequireFields<MutationCreateCommentArgs, 'input'>>;
+  createConversation?: Resolver<ResolversTypes['CreateConversationResponse'], ParentType, ContextType, RequireFields<MutationCreateConversationArgs, 'userId'>>;
+  createMessage?: Resolver<ResolversTypes['CreateMessageResponse'], ParentType, ContextType, RequireFields<MutationCreateMessageArgs, 'content' | 'conversationId'>>;
   createPost?: Resolver<ResolversTypes['CreatePostResponse'], ParentType, ContextType, RequireFields<MutationCreatePostArgs, 'input'>>;
   deleteComment?: Resolver<ResolversTypes['DeleteCommentResponse'], ParentType, ContextType, RequireFields<MutationDeleteCommentArgs, 'commentId'>>;
   deletePost?: Resolver<ResolversTypes['DeletePostResponse'], ParentType, ContextType, RequireFields<MutationDeletePostArgs, 'postId'>>;
@@ -463,7 +542,10 @@ export type Resolvers<ContextType = Context> = {
   Conversation?: ConversationResolvers<ContextType>;
   ConversationParticipant?: ConversationParticipantResolvers<ContextType>;
   CreateCommentResponse?: CreateCommentResponseResolvers<ContextType>;
+  CreateConversationResponse?: CreateConversationResponseResolvers<ContextType>;
+  CreateMessageResponse?: CreateMessageResponseResolvers<ContextType>;
   CreatePostResponse?: CreatePostResponseResolvers<ContextType>;
+  CreatedMessage?: CreatedMessageResolvers<ContextType>;
   DateTime?: GraphQLScalarType;
   DeleteCommentResponse?: DeleteCommentResponseResolvers<ContextType>;
   DeletePostResponse?: DeletePostResponseResolvers<ContextType>;
