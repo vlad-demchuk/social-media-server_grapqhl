@@ -1,3 +1,4 @@
+import * as userService from './services/user.service';
 import * as postService from './services/post.service';
 import * as likeService from './services/like.service';
 import * as commentService from './services/comment.service';
@@ -11,6 +12,40 @@ import { GraphQLError } from 'graphql/error';
 
 export const resolvers: Resolvers = {
   Query: {
+    // Users
+    users: async (_, __, context) => {
+      if (!context.user) {
+        throw new GraphQLError('Authentication required', {
+          extensions: { code: 'UNAUTHENTICATED' },
+        });
+      }
+
+      const users = await userService.getAll();
+
+      return users;
+    },
+    user: async (_, args, context) => {
+      if (!context.user) {
+        throw new GraphQLError('Authentication required', {
+          extensions: { code: 'UNAUTHENTICATED' },
+        });
+      }
+
+      const user = await userService.getOne(args.userId);
+
+      return user;
+    },
+    searchUser: async (_, args, context) => {
+      if (!context.user) {
+        throw new GraphQLError('Authentication required', {
+          extensions: { code: 'UNAUTHENTICATED' },
+        });
+      }
+
+      const users = await userService.search(args.query);
+
+      return users;
+    },
     // Posts
     posts: async (_, __, context) => {
       if (!context.user) {
