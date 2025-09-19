@@ -257,8 +257,14 @@ export type Query = {
   post: Post;
   /** List all posts */
   posts: Array<Post>;
+  /** Search user by username or email */
+  searchUser: Array<User>;
+  /** Single user */
+  user: User;
   /** List user posts */
   userPosts: Array<Post>;
+  /** List all users */
+  users: Array<User>;
 };
 
 
@@ -281,8 +287,39 @@ export type QueryPostArgs = {
 
 
 /** Queries */
+export type QuerySearchUserArgs = {
+  query: Scalars['String']['input'];
+};
+
+
+/** Queries */
+export type QueryUserArgs = {
+  userId: Scalars['Int']['input'];
+};
+
+
+/** Queries */
 export type QueryUserPostsArgs = {
   userName: Scalars['String']['input'];
+};
+
+/** Users */
+export type User = {
+  __typename?: 'User';
+  /** Creation timestamp */
+  createdAt: Scalars['DateTime']['output'];
+  /** User email */
+  email: Scalars['String']['output'];
+  /** Whether the current user verified the email */
+  emailVerified: Scalars['Boolean']['output'];
+  /** Unique user identifier */
+  id: Scalars['Int']['output'];
+  /** User avatar link */
+  image?: Maybe<Scalars['String']['output']>;
+  /** Timestamp of the last updated */
+  updatedAt: Scalars['DateTime']['output'];
+  /** User username */
+  username: Scalars['String']['output'];
 };
 
 
@@ -377,6 +414,7 @@ export type ResolversTypes = {
   Post: ResolverTypeWrapper<Post>;
   Query: ResolverTypeWrapper<{}>;
   String: ResolverTypeWrapper<Scalars['String']['output']>;
+  User: ResolverTypeWrapper<User>;
 };
 
 /** Mapping between all available schema types and the resolvers parents */
@@ -402,6 +440,7 @@ export type ResolversParentTypes = {
   Post: Post;
   Query: {};
   String: Scalars['String']['output'];
+  User: User;
 };
 
 export type CommentResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Comment'] = ResolversParentTypes['Comment']> = {
@@ -534,7 +573,21 @@ export type QueryResolvers<ContextType = Context, ParentType extends ResolversPa
   conversations?: Resolver<Array<ResolversTypes['Conversation']>, ParentType, ContextType>;
   post?: Resolver<ResolversTypes['Post'], ParentType, ContextType, RequireFields<QueryPostArgs, 'postId'>>;
   posts?: Resolver<Array<ResolversTypes['Post']>, ParentType, ContextType>;
+  searchUser?: Resolver<Array<ResolversTypes['User']>, ParentType, ContextType, RequireFields<QuerySearchUserArgs, 'query'>>;
+  user?: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<QueryUserArgs, 'userId'>>;
   userPosts?: Resolver<Array<ResolversTypes['Post']>, ParentType, ContextType, RequireFields<QueryUserPostsArgs, 'userName'>>;
+  users?: Resolver<Array<ResolversTypes['User']>, ParentType, ContextType>;
+};
+
+export type UserResolvers<ContextType = Context, ParentType extends ResolversParentTypes['User'] = ResolversParentTypes['User']> = {
+  createdAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
+  email?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  emailVerified?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  image?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  updatedAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
+  username?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type Resolvers<ContextType = Context> = {
@@ -554,5 +607,6 @@ export type Resolvers<ContextType = Context> = {
   Mutation?: MutationResolvers<ContextType>;
   Post?: PostResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
+  User?: UserResolvers<ContextType>;
 };
 
