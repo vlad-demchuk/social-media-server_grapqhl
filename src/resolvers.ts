@@ -4,11 +4,14 @@ import * as likeService from './services/like.service';
 import * as commentService from './services/comment.service';
 import * as conversationService from './services/conversation.service';
 import * as messageService from './services/message.service';
-import { Resolvers } from './types';
+import { ConversationParticipant, Resolvers } from './types';
 import { GraphQLError } from 'graphql/error';
+import { PubSub } from 'graphql-subscriptions';
 
-// TODO: get user from context
 // TODO: handle errors
+
+const pubsub = new PubSub();
+
 
 export const resolvers: Resolvers = {
   Query: {
@@ -302,6 +305,17 @@ export const resolvers: Resolvers = {
           content: args.content,
         });
 
+
+        const sender: ConversationParticipant = {
+          id: context.user.id,
+          username: context.user.name,
+          image: context.user.image
+        }
+
+        pubsub.publish('MESSAGE_ADDED', {
+          messageAdded: { ...message, sender },
+        });
+
         return {
           code: 200,
           success: true,
@@ -318,4 +332,12 @@ export const resolvers: Resolvers = {
       }
     },
   },
+  Subscription: {
+    messageAdded: {
+      subscribe: () => {
+        console.log('SUBSCRIBED ON MESSAGE_ADDED');
+        return pubsub.asyncIterableIterator('MESSAGE_ADDED');
+      } ,
+    },
+  }
 };

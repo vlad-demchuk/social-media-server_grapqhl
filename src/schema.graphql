@@ -172,7 +172,7 @@ type CreateMessageResponse {
   createdMessage: CreatedMessage
 }
 
-"Queries"
+# Queries
 type Query {
   # Users
   "List all users"
@@ -222,4 +222,11 @@ type Mutation {
   # Messages
   "Create a new conversation message"
   createMessage(conversationId: Int!, content: String!): CreateMessageResponse!
+}
+
+# Subscriptions
+type Subscription {
+  messageAdded(conversationId: ID): Message!
+  chatUpdated: Conversation!
+  userOnlineStatusChanged: User!
 }

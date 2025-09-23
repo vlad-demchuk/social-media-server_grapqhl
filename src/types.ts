@@ -244,7 +244,6 @@ export type Post = {
   username: Scalars['String']['output'];
 };
 
-/** Queries */
 export type Query = {
   __typename?: 'Query';
   /** List comments for a specific post */
@@ -268,39 +267,45 @@ export type Query = {
 };
 
 
-/** Queries */
 export type QueryCommentsArgs = {
   postId: Scalars['Int']['input'];
 };
 
 
-/** Queries */
 export type QueryConversationMessagesArgs = {
   conversationId: Scalars['Int']['input'];
 };
 
 
-/** Queries */
 export type QueryPostArgs = {
   postId: Scalars['Int']['input'];
 };
 
 
-/** Queries */
 export type QuerySearchUserArgs = {
   query: Scalars['String']['input'];
 };
 
 
-/** Queries */
 export type QueryUserArgs = {
   userId: Scalars['Int']['input'];
 };
 
 
-/** Queries */
 export type QueryUserPostsArgs = {
   userName: Scalars['String']['input'];
+};
+
+export type Subscription = {
+  __typename?: 'Subscription';
+  chatUpdated: Conversation;
+  messageAdded: Message;
+  userOnlineStatusChanged: User;
+};
+
+
+export type SubscriptionMessageAddedArgs = {
+  conversationId?: InputMaybe<Scalars['ID']['input']>;
 };
 
 /** Users */
@@ -407,6 +412,7 @@ export type ResolversTypes = {
   DateTime: ResolverTypeWrapper<Scalars['DateTime']['output']>;
   DeleteCommentResponse: ResolverTypeWrapper<DeleteCommentResponse>;
   DeletePostResponse: ResolverTypeWrapper<DeletePostResponse>;
+  ID: ResolverTypeWrapper<Scalars['ID']['output']>;
   Int: ResolverTypeWrapper<Scalars['Int']['output']>;
   LikePostResponse: ResolverTypeWrapper<LikePostResponse>;
   Message: ResolverTypeWrapper<Message>;
@@ -414,6 +420,7 @@ export type ResolversTypes = {
   Post: ResolverTypeWrapper<Post>;
   Query: ResolverTypeWrapper<{}>;
   String: ResolverTypeWrapper<Scalars['String']['output']>;
+  Subscription: ResolverTypeWrapper<{}>;
   User: ResolverTypeWrapper<User>;
 };
 
@@ -433,6 +440,7 @@ export type ResolversParentTypes = {
   DateTime: Scalars['DateTime']['output'];
   DeleteCommentResponse: DeleteCommentResponse;
   DeletePostResponse: DeletePostResponse;
+  ID: Scalars['ID']['output'];
   Int: Scalars['Int']['output'];
   LikePostResponse: LikePostResponse;
   Message: Message;
@@ -440,6 +448,7 @@ export type ResolversParentTypes = {
   Post: Post;
   Query: {};
   String: Scalars['String']['output'];
+  Subscription: {};
   User: User;
 };
 
@@ -579,6 +588,12 @@ export type QueryResolvers<ContextType = Context, ParentType extends ResolversPa
   users?: Resolver<Array<ResolversTypes['User']>, ParentType, ContextType>;
 };
 
+export type SubscriptionResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Subscription'] = ResolversParentTypes['Subscription']> = {
+  chatUpdated?: SubscriptionResolver<ResolversTypes['Conversation'], "chatUpdated", ParentType, ContextType>;
+  messageAdded?: SubscriptionResolver<ResolversTypes['Message'], "messageAdded", ParentType, ContextType, Partial<SubscriptionMessageAddedArgs>>;
+  userOnlineStatusChanged?: SubscriptionResolver<ResolversTypes['User'], "userOnlineStatusChanged", ParentType, ContextType>;
+};
+
 export type UserResolvers<ContextType = Context, ParentType extends ResolversParentTypes['User'] = ResolversParentTypes['User']> = {
   createdAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   email?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -607,6 +622,7 @@ export type Resolvers<ContextType = Context> = {
   Mutation?: MutationResolvers<ContextType>;
   Post?: PostResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
+  Subscription?: SubscriptionResolvers<ContextType>;
   User?: UserResolvers<ContextType>;
 };
 
