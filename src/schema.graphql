@@ -154,6 +154,15 @@ type Message {
   sender: ConversationParticipant!
 }
 
+type MessagePayload {
+  id: Int!
+  content: String!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  sender: ConversationParticipant!
+  conversationId: Int!
+}
+
 type CreatedMessage {
   id: Int!
   content: String!
@@ -226,7 +235,7 @@ type Mutation {
 
 # Subscriptions
 type Subscription {
-  messageAdded(conversationId: ID): Message!
+  messageAdded: MessagePayload!
   chatUpdated: Conversation!
   userOnlineStatusChanged: User!
 }

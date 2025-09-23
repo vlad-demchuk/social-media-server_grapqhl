@@ -4,14 +4,14 @@ import * as likeService from './services/like.service';
 import * as commentService from './services/comment.service';
 import * as conversationService from './services/conversation.service';
 import * as messageService from './services/message.service';
-import { ConversationParticipant, Resolvers } from './types';
+import { ConversationParticipant, MessagePayload, Resolvers } from './types';
 import { GraphQLError } from 'graphql/error';
-import { PubSub } from 'graphql-subscriptions';
+import { PubSub, withFilter } from 'graphql-subscriptions';
+import { Context } from './context';
 
 // TODO: handle errors
 
 const pubsub = new PubSub();
-
 
 export const resolvers: Resolvers = {
   Query: {
@@ -305,15 +305,25 @@ export const resolvers: Resolvers = {
           content: args.content,
         });
 
+        const { user: { id, name, image } } = context;
 
         const sender: ConversationParticipant = {
-          id: context.user.id,
-          username: context.user.name,
-          image: context.user.image
-        }
+          id,
+          username: name,
+          image,
+        };
+
+        const messageAdded: MessagePayload = {
+          id: message.id,
+          conversationId: args.conversationId,
+          content: message.content,
+          createdAt: message.createdAt,
+          updatedAt: message.updatedAt,
+          sender,
+        };
 
         pubsub.publish('MESSAGE_ADDED', {
-          messageAdded: { ...message, sender },
+          messageAdded,
         });
 
         return {
@@ -334,10 +344,32 @@ export const resolvers: Resolvers = {
   },
   Subscription: {
     messageAdded: {
-      subscribe: () => {
-        console.log('SUBSCRIBED ON MESSAGE_ADDED');
-        return pubsub.asyncIterableIterator('MESSAGE_ADDED');
-      } ,
+      subscribe: withFilter<{ messageAdded: MessagePayload }, {}, Context>(
+        () => pubsub.asyncIterableIterator(
+          'MESSAGE_ADDED'),
+        async (payload, _, context) => {
+          if (!payload) {
+            return false;
+          }
+
+          const messageAdded = payload.messageAdded;
+
+          if (!context.user.id) {
+            return false;
+          }
+
+          if (context.user.id === messageAdded.sender.id) {
+            return false;
+          }
+
+          const isParticipant = await conversationService.isUserInChat(
+            context?.user?.id,
+            messageAdded?.conversationId,
+          );
+
+          return isParticipant;
+        },
+      ),
     },
-  }
+  },
 };

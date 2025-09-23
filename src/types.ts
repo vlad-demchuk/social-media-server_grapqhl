@@ -164,6 +164,16 @@ export type Message = {
   updatedAt: Scalars['DateTime']['output'];
 };
 
+export type MessagePayload = {
+  __typename?: 'MessagePayload';
+  content: Scalars['String']['output'];
+  conversationId: Scalars['Int']['output'];
+  createdAt: Scalars['DateTime']['output'];
+  id: Scalars['Int']['output'];
+  sender: ConversationParticipant;
+  updatedAt: Scalars['DateTime']['output'];
+};
+
 export type Mutation = {
   __typename?: 'Mutation';
   /** Create a new comment on a post */
@@ -299,13 +309,8 @@ export type QueryUserPostsArgs = {
 export type Subscription = {
   __typename?: 'Subscription';
   chatUpdated: Conversation;
-  messageAdded: Message;
+  messageAdded: MessagePayload;
   userOnlineStatusChanged: User;
-};
-
-
-export type SubscriptionMessageAddedArgs = {
-  conversationId?: InputMaybe<Scalars['ID']['input']>;
 };
 
 /** Users */
@@ -412,10 +417,10 @@ export type ResolversTypes = {
   DateTime: ResolverTypeWrapper<Scalars['DateTime']['output']>;
   DeleteCommentResponse: ResolverTypeWrapper<DeleteCommentResponse>;
   DeletePostResponse: ResolverTypeWrapper<DeletePostResponse>;
-  ID: ResolverTypeWrapper<Scalars['ID']['output']>;
   Int: ResolverTypeWrapper<Scalars['Int']['output']>;
   LikePostResponse: ResolverTypeWrapper<LikePostResponse>;
   Message: ResolverTypeWrapper<Message>;
+  MessagePayload: ResolverTypeWrapper<MessagePayload>;
   Mutation: ResolverTypeWrapper<{}>;
   Post: ResolverTypeWrapper<Post>;
   Query: ResolverTypeWrapper<{}>;
@@ -440,10 +445,10 @@ export type ResolversParentTypes = {
   DateTime: Scalars['DateTime']['output'];
   DeleteCommentResponse: DeleteCommentResponse;
   DeletePostResponse: DeletePostResponse;
-  ID: Scalars['ID']['output'];
   Int: Scalars['Int']['output'];
   LikePostResponse: LikePostResponse;
   Message: Message;
+  MessagePayload: MessagePayload;
   Mutation: {};
   Post: Post;
   Query: {};
@@ -554,6 +559,16 @@ export type MessageResolvers<ContextType = Context, ParentType extends Resolvers
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
+export type MessagePayloadResolvers<ContextType = Context, ParentType extends ResolversParentTypes['MessagePayload'] = ResolversParentTypes['MessagePayload']> = {
+  content?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  conversationId?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  createdAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  sender?: Resolver<ResolversTypes['ConversationParticipant'], ParentType, ContextType>;
+  updatedAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
 export type MutationResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {
   createComment?: Resolver<ResolversTypes['CreateCommentResponse'], ParentType, ContextType, RequireFields<MutationCreateCommentArgs, 'input'>>;
   createConversation?: Resolver<ResolversTypes['CreateConversationResponse'], ParentType, ContextType, RequireFields<MutationCreateConversationArgs, 'userId'>>;
@@ -590,7 +605,7 @@ export type QueryResolvers<ContextType = Context, ParentType extends ResolversPa
 
 export type SubscriptionResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Subscription'] = ResolversParentTypes['Subscription']> = {
   chatUpdated?: SubscriptionResolver<ResolversTypes['Conversation'], "chatUpdated", ParentType, ContextType>;
-  messageAdded?: SubscriptionResolver<ResolversTypes['Message'], "messageAdded", ParentType, ContextType, Partial<SubscriptionMessageAddedArgs>>;
+  messageAdded?: SubscriptionResolver<ResolversTypes['MessagePayload'], "messageAdded", ParentType, ContextType>;
   userOnlineStatusChanged?: SubscriptionResolver<ResolversTypes['User'], "userOnlineStatusChanged", ParentType, ContextType>;
 };
 
@@ -619,6 +634,7 @@ export type Resolvers<ContextType = Context> = {
   DeletePostResponse?: DeletePostResponseResolvers<ContextType>;
   LikePostResponse?: LikePostResponseResolvers<ContextType>;
   Message?: MessageResolvers<ContextType>;
+  MessagePayload?: MessagePayloadResolvers<ContextType>;
   Mutation?: MutationResolvers<ContextType>;
   Post?: PostResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;

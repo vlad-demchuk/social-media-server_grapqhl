@@ -1,4 +1,5 @@
 import { pool } from '../db/db';
+import { Message } from '../types';
 
 export const getConversationMessages = async (conversationId: number) => {
   const result = await pool.query(`
@@ -26,7 +27,7 @@ export const create = async ({ conversationId, senderId, content }: {
   conversationId: number,
   senderId: number,
   content: string
-}) => {
+}): Promise<Omit<Message, 'sender'>> => {
   const result = await pool.query(`
       INSERT INTO messages (conversation_id, sender_id, content)
       VALUES ($1, $2, $3) RETURNING id, content, created_at AS "createdAt", updated_at AS "updatedAt";

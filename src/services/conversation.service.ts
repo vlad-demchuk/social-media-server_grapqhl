@@ -95,3 +95,14 @@ export const createDirect = async (currentUserId: number, secondUserId: number) 
 
   return conversationId;
 };
+
+export const isUserInChat = async (userId: number, conversationId: number) => {
+  const result = await pool.query(`
+      SELECT 1
+      FROM conversation_participants
+      WHERE user_id = $1
+        AND conversation_id = $2 LIMIT 1;
+  `, [userId, conversationId]);
+
+  return result.rowCount > 0
+}
