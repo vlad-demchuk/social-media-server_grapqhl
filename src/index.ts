@@ -6,10 +6,13 @@ import 'dotenv/config';
 import { ApolloServer } from '@apollo/server';
 import { ApolloServerPluginDrainHttpServer } from '@apollo/server/plugin/drainHttpServer';
 import { expressMiddleware } from '@as-integrations/express5';
+import { makeExecutableSchema } from '@graphql-tools/schema';
 
 import { readFileSync } from 'fs';
 import path from 'path';
 import { gql } from 'graphql-tag';
+import { WebSocketServer } from 'ws';
+import { useServer } from 'graphql-ws/use/ws';
 import { resolvers } from './resolvers';
 
 import { fromNodeHeaders, toNodeHandler } from 'better-auth/node';
@@ -40,10 +43,22 @@ const PORT = 4000;
     }),
   );
 
+  const schema = makeExecutableSchema({ typeDefs, resolvers });
+
   const server = new ApolloServer({
-    typeDefs,
-    resolvers,
-    plugins: [ApolloServerPluginDrainHttpServer({ httpServer })],
+    schema,
+    plugins: [
+      ApolloServerPluginDrainHttpServer({ httpServer }),
+      {
+        async serverWillStart() {
+          return {
+            async drainServer() {
+              await wsServerCleanup.dispose();
+            },
+          };
+        },
+      },
+    ],
   });
 
   await server.start();
@@ -63,6 +78,33 @@ const PORT = 4000;
         };
       },
     }),
+  );
+
+  const wsServer = new WebSocketServer({
+    server: httpServer,
+    path: '/graphql',
+  });
+
+  const wsServerCleanup = useServer(
+    {
+      schema,
+      context: async (ctx) => {
+        const session = await auth.api.getSession({
+          headers: fromNodeHeaders(ctx.extra.request.headers),
+        });
+
+
+        return {
+          user: session?.user || null,
+          session,
+          auth,
+        };
+      },
+      onConnect: () => {
+        console.log("WS CONNECTED SUCCESSFULLY");
+      }
+    },
+    wsServer,
   );
 
   await new Promise<void>((resolve) =>
