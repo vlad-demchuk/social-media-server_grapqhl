@@ -11,12 +11,16 @@ export const getAll = async (currentUserId: number) => {
         c.name,
         c.created_at AS "createdAt",
 
-        -- participants (including current user for now)
+        -- participants (excluding current user in direct chats)
         json_agg(
             json_build_object(
                 'id', u.id,
                 'username', u.username,
-                'image', u.image
+                'email', u.email,
+                'image', u.image,
+                'createdAt', u.created_at,
+                'emailVerified', u.email_verified,
+                'updatedAt', u.updated_at
             )
         ) FILTER (WHERE u.id IS NOT NULL AND (c.type != 'direct' OR u.id != $1)) AS participants,
 
@@ -30,7 +34,11 @@ export const getAll = async (currentUserId: number) => {
                 'sender', json_build_object(
                     'id', sender.id,
                     'username', sender.username,
-                    'image', sender.image
+                    'email', sender.email,
+                    'image', sender.image,
+                    'createdAt', sender.created_at,
+                    'emailVerified', sender.email_verified,
+                    'updatedAt', sender.updated_at
                 )
             )
             FROM messages m
@@ -75,26 +83,79 @@ export const createDirect = async (currentUserId: number, secondUserId: number) 
   );
 
   if (existing.rows.length > 0) {
-    return existing.rows[0].id;
+    // Return full conversation object instead of just id
+    const { rows } = await pool.query(`
+      SELECT 
+        c.id,
+        c.name,
+        c.type,
+        c.created_at AS "createdAt",
+        json_agg(
+          json_build_object(
+            'id', u.id,
+            'username', u.username,
+            'email', u.email,
+            'image', u.image,
+            'createdAt', u.created_at,
+            'emailVerified', u.email_verified,
+            'updatedAt', u.updated_at
+          )
+        ) AS participants,
+        NULL as "lastMessage"
+      FROM conversations c
+        JOIN conversation_participants cp ON cp.conversation_id = c.id
+        JOIN users u ON u.id = cp.user_id
+      WHERE c.id = $1
+      GROUP BY c.id
+    `, [existing.rows[0].id]);
+
+    return rows[0];
   }
 
   // Create new
   const conversationRes = await pool.query(
     `INSERT INTO conversations (type)
-     VALUES ('direct') RETURNING id`,
+     VALUES ('direct') RETURNING id, name, type, created_at`,
   );
 
-  const conversationId = conversationRes.rows[0].id;
+  const conversation = conversationRes.rows[0];
 
   await pool.query(
     `INSERT INTO conversation_participants (conversation_id, user_id)
      VALUES ($1, $2),
             ($1, $3)`,
-    [conversationId, currentUserId, secondUserId],
+    [conversation.id, currentUserId, secondUserId],
   );
 
-  return conversationId;
+  // Fetch full conversation object with participants, lastMessage null
+  const { rows } = await pool.query(`
+    SELECT 
+      c.id,
+      c.name,
+      c.type,
+      c.created_at AS "createdAt",
+      json_agg(
+        json_build_object(
+          'id', u.id,
+          'username', u.username,
+          'email', u.email,
+          'image', u.image,
+          'createdAt', u.created_at,
+          'emailVerified', u.email_verified,
+          'updatedAt', u.updated_at
+        )
+      ) AS participants,
+      NULL as "lastMessage"
+    FROM conversations c
+      JOIN conversation_participants cp ON cp.conversation_id = c.id
+      JOIN users u ON u.id = cp.user_id
+    WHERE c.id = $1
+    GROUP BY c.id
+  `, [conversation.id]);
+
+  return rows[0];
 };
+
 
 export const isUserInChat = async (userId: number, conversationId: number) => {
   const result = await pool.query(`

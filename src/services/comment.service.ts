@@ -8,7 +8,15 @@ export const getByPostId = async (postId: number) => {
         comments.id,
         comments.content,
         comments.created_at AS "createdAt",
-        users.username
+        json_build_object(
+          'id', users.id,
+          'username', users.username,
+          'email', users.email,
+          'image', users.image,
+          'createdAt', users.created_at,
+          'emailVerified', users.email_verified,
+          'updatedAt', users.updated_at
+        ) AS author
       FROM comments
       JOIN users ON users.id = comments.user_id
       WHERE comments.post_id = $1
@@ -20,6 +28,7 @@ export const getByPostId = async (postId: number) => {
   return result.rows;
 };
 
+
 export const create = async ({
   content,
   userId,
@@ -27,23 +36,33 @@ export const create = async ({
 }: CreateCommentInput & { userId: number }) => {
   const result = await pool.query(
     `
-      INSERT INTO comments (content, user_id, post_id)
-      VALUES ($1, $2, $3)
-      RETURNING id, content, created_at AS "createdAt", 
-        (SELECT username FROM users WHERE users.id = $2) AS username
+      WITH inserted AS (
+        INSERT INTO comments (content, user_id, post_id)
+        VALUES ($1, $2, $3)
+        RETURNING id, content, created_at, user_id
+      )
+      SELECT 
+        i.id,
+        i.content,
+        i.created_at AS "createdAt",
+        json_build_object(
+          'id', u.id,
+          'username', u.username,
+          'email', u.email,
+          'image', u.image,
+          'createdAt', u.created_at,
+          'emailVerified', u.email_verified,
+          'updatedAt', u.updated_at
+        ) AS author
+      FROM inserted i
+      JOIN users u ON u.id = i.user_id
     `,
     [content, userId, postId],
   );
 
-  const inserted = result.rows[0];
-
-  return {
-    id: inserted.id,
-    content: inserted.content,
-    createdAt: inserted.createdAt,
-    username: inserted.username,
-  };
+  return result.rows[0];
 };
+
 
 export const remove = async (id: number) => {
   const result = await pool.query(
