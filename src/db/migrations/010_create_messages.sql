@@ -1,8 +1,18 @@
-CREATE TABLE messages (
+CREATE TYPE notification_type AS ENUM ('LIKE', 'COMMENT', 'MESSAGE');
+
+CREATE TABLE notifications (
     id SERIAL PRIMARY KEY,
-    conversation_id SERIAL REFERENCES conversations(id) ON DELETE CASCADE,
-    sender_id SERIAL REFERENCES users(id) ON DELETE SET NULL,
-    content TEXT NOT NULL,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+    recipient_id INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    actor_id INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    type notification_type NOT NULL,
+    entity_id INT NOT NULL,
+    entity_type VARCHAR(20) NOT NULL CHECK (entity_type IN ('POST', 'COMMENT', 'MESSAGE')),
+    preview TEXT,
+    read BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
+
+-- Indexes for performance
+CREATE INDEX idx_notifications_recipient_id ON notifications(recipient_id);
+CREATE INDEX idx_notifications_read ON notifications(read);
+CREATE INDEX idx_notifications_entity ON notifications(entity_id, entity_type);

@@ -4,7 +4,7 @@ import * as likeService from './services/like.service';
 import * as commentService from './services/comment.service';
 import * as conversationService from './services/conversation.service';
 import * as messageService from './services/message.service';
-import { ConversationParticipant, MessagePayload, Resolvers } from './types';
+import { ConversationParticipant, MessagePayload, NotificationPayload, NotificationType, Resolvers } from './types';
 import { GraphQLError } from 'graphql/error';
 import { PubSub, withFilter } from 'graphql-subscriptions';
 import { Context } from './context';
@@ -117,11 +117,15 @@ export const resolvers: Resolvers = {
   Mutation: {
     // Posts
     createPost: async (_, args, context) => {
+      console.log('>>>>> context.user.id:', context.user.id);
+      console.log('>>>>> args.input.content:', args.input.content);
       try {
         const post = await postService.create({
           content: args.input.content,
           userId: Number(context.user.id),
         });
+
+        console.log('>>>>> post:', post);
 
         return {
           code: 200,
@@ -130,6 +134,7 @@ export const resolvers: Resolvers = {
           post,
         };
       } catch (error) {
+        console.log('>>>>> error:', error);
         return {
           code: 500,
           success: false,
@@ -146,7 +151,6 @@ export const resolvers: Resolvers = {
           code: 200,
           success: true,
           message: 'Post successfully deleted!',
-          postId: args.postId,
         };
       } catch (error) {
         return {
@@ -167,6 +171,27 @@ export const resolvers: Resolvers = {
 
       try {
         const post = await likeService.likePost(context.user.id, args.postId);
+
+        const { id, image, name, emailVerified, updatedAt, createdAt, email } = context.user;
+
+        const notificationPayload: NotificationPayload = {
+          actor: {
+            id,
+            username: name,
+            email,
+            emailVerified,
+            createdAt,
+            updatedAt,
+            image,
+          },
+          entityId: post.id,
+          entityType: 'POST',
+          preview: 'Your post was liked',
+          type: NotificationType.Like,
+          recipientId: post.id
+        };
+
+        await pubsub.publish('NOTIFICATION_ADDED', { notificationAdded: notificationPayload });
 
         return {
           code: 200,
@@ -272,13 +297,13 @@ export const resolvers: Resolvers = {
       }
 
       try {
-        const conversationId = await conversationService.createDirect(context.user.id, args.userId);
+        const conversation = await conversationService.createDirect(context.user.id, args.userId);
 
         return {
           code: 200,
           success: true,
           message: 'Conversation successfully created!',
-          conversationId,
+          conversation,
         };
       } catch (error) {
         return {

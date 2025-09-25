@@ -27,7 +27,7 @@ type Post {
   "Creation timestamp"
   createdAt: DateTime!
   "Author's username"
-  username: String!
+  owner: User!
   "Number of likes on this post"
   likesCount: Int!
   "Number of comments on this post"
@@ -61,8 +61,6 @@ type DeletePostResponse {
   success: Boolean!
   "Human-readable status message"
   message: String!
-  "Identifier of the deleted post"
-  postId: Int
 }
 
 "Likes"
@@ -85,8 +83,8 @@ type Comment {
   content: String!
   "Creation timestamp"
   createdAt: DateTime!
-  "Author's username"
-  username: String!
+  "Comment author"
+  author: User!
 }
 
 input CreateCommentInput {
@@ -130,7 +128,7 @@ type Conversation {
   type: String!
   name: String
   createdAt: DateTime!
-  participants: [ConversationParticipant!]!
+  participants: [User!]!
   lastMessage: Message
 }
 
@@ -142,7 +140,7 @@ type CreateConversationResponse {
   "Human-readable status message"
   message: String!
   "The created conversation id, if successful"
-  conversationId: Int
+  conversation: Conversation
 }
 
 "Messages"
@@ -151,7 +149,7 @@ type Message {
   content: String!
   createdAt: DateTime!
   updatedAt: DateTime!
-  sender: ConversationParticipant!
+  sender: User!
 }
 
 type MessagePayload {
@@ -163,13 +161,6 @@ type MessagePayload {
   conversationId: Int!
 }
 
-type CreatedMessage {
-  id: Int!
-  content: String!
-  createdAt: DateTime!
-  updatedAt: DateTime!
-}
-
 type CreateMessageResponse {
   "HTTP-like status code"
   code: Int!
@@ -178,7 +169,31 @@ type CreateMessageResponse {
   "Human-readable status message"
   message: String!
   "The created message, if successful"
-  createdMessage: CreatedMessage
+  createdMessage: Message
+}
+
+# Notifications
+enum NotificationType { LIKE COMMENT MESSAGE }
+
+type Notification {
+  id: Int!
+  recipientId: Int!
+  actor: User!
+  type: NotificationType!
+  entityId: Int!
+  entityType: String!
+  preview: String
+  read: Boolean!
+  createdAt: String!
+}
+
+type NotificationPayload {
+  recipientId: Int!
+  actor: User!
+  type: NotificationType!
+  entityId: Int!
+  entityType: String!
+  preview: String
 }
 
 # Queries
@@ -206,6 +221,9 @@ type Query {
   # Messages
   "List all conversation messages"
   conversationMessages(conversationId: Int!): [Message!]!
+  # Notifications
+  "List all notifications"
+  notifications: [Notification!]!
 }
 
 # Mutations
@@ -236,6 +254,5 @@ type Mutation {
 # Subscriptions
 type Subscription {
   messageAdded: MessagePayload!
-  chatUpdated: Conversation!
-  userOnlineStatusChanged: User!
+  notificationAdded: Notification!
 }
