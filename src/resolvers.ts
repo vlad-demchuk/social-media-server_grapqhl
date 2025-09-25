@@ -117,15 +117,11 @@ export const resolvers: Resolvers = {
   Mutation: {
     // Posts
     createPost: async (_, args, context) => {
-      console.log('>>>>> context.user.id:', context.user.id);
-      console.log('>>>>> args.input.content:', args.input.content);
       try {
         const post = await postService.create({
           content: args.input.content,
           userId: Number(context.user.id),
         });
-
-        console.log('>>>>> post:', post);
 
         return {
           code: 200,
@@ -134,7 +130,6 @@ export const resolvers: Resolvers = {
           post,
         };
       } catch (error) {
-        console.log('>>>>> error:', error);
         return {
           code: 500,
           success: false,
