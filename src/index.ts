@@ -64,6 +64,7 @@ const HOST = process.env.PORT ? '0.0.0.0' : '127.0.0.1';
         },
       },
     ],
+    introspection: true,
   });
 
   await server.start();
