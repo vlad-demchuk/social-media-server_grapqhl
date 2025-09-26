@@ -19,6 +19,7 @@ import { fromNodeHeaders, toNodeHandler } from 'better-auth/node';
 import { auth } from './lib/auth';
 
 const PORT = process.env.PORT || 4000;
+const HOST = process.env.PORT ? '0.0.0.0' : '127.0.0.1';
 
 (async () => {
   const app = express();
@@ -94,7 +95,6 @@ const PORT = process.env.PORT || 4000;
           headers: fromNodeHeaders(ctx.extra.request.headers),
         });
 
-
         return {
           user: session?.user || null,
           session,
@@ -102,14 +102,14 @@ const PORT = process.env.PORT || 4000;
         };
       },
       onConnect: () => {
-        console.log("WS CONNECTED SUCCESSFULLY");
-      }
+        console.log('WS CONNECTED SUCCESSFULLY');
+      },
     },
     wsServer,
   );
 
   await new Promise<void>((resolve) =>
-    httpServer.listen({ port: PORT }, resolve),
+    httpServer.listen({ port: PORT, hostname: HOST }, resolve),
   );
-  console.log(`🚀 Server ready at http://localhost:${PORT}/`);
+  console.log(`🚀 Server ready at ${HOST}:${PORT}/`);
 })();
