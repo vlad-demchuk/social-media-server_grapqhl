@@ -95,6 +95,8 @@ const HOST = process.env.PORT ? '0.0.0.0' : '127.0.0.1';
     {
       schema,
       context: async (ctx) => {
+        console.log('Handshake headers:', ctx.extra.request.headers);
+        console.log('Connection params:', ctx.connectionParams);
         const session = await auth.api.getSession({
           headers: fromNodeHeaders(ctx.extra.request.headers),
         });
