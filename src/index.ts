@@ -18,7 +18,7 @@ import { resolvers } from './resolvers';
 import { fromNodeHeaders, toNodeHandler } from 'better-auth/node';
 import { auth } from './lib/auth';
 
-const PORT = 4000;
+const PORT = process.env.PORT || 4000;
 
 (async () => {
   const app = express();
@@ -67,6 +67,7 @@ const PORT = 4000;
     '/graphql',
     expressMiddleware(server, {
       context: async ({ req }) => {
+        console.log('>>>>> req:', req);
         const session = await auth.api.getSession({
           headers: fromNodeHeaders(req.headers),
         });
