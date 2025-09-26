@@ -68,7 +68,6 @@ const HOST = process.env.PORT ? '0.0.0.0' : '127.0.0.1';
     '/graphql',
     expressMiddleware(server, {
       context: async ({ req }) => {
-        console.log('>>>>> req:', req);
         const session = await auth.api.getSession({
           headers: fromNodeHeaders(req.headers),
         });
@@ -94,6 +93,8 @@ const HOST = process.env.PORT ? '0.0.0.0' : '127.0.0.1';
         const session = await auth.api.getSession({
           headers: fromNodeHeaders(ctx.extra.request.headers),
         });
+
+        console.log('>>>>> session:', session);
 
         return {
           user: session?.user || null,
