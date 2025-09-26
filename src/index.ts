@@ -27,7 +27,11 @@ const HOST = process.env.PORT ? '0.0.0.0' : '127.0.0.1';
 
   app.use(
     cors({
-      origin: process.env.FRONTEND_URL, // Replace with your frontend's origin
+      origin: [
+        process.env.FRONTEND_URL,
+        'http://localhost:3000',
+        'https://studio.apollographql.com',
+      ], // Replace with your frontend's origin
       methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'], // Specify allowed HTTP methods
       credentials: true, // Allow credentials (cookies, authorization headers, etc.)
       allowedHeaders: ['Content-Type', 'Authorization', 'Apollo-Require-Preflight'], // Add Apollo headers
