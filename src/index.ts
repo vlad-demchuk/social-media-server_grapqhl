@@ -97,16 +97,18 @@ const HOST = process.env.PORT ? '0.0.0.0' : '127.0.0.1';
       context: async (ctx) => {
         console.log('Handshake headers:', ctx.extra.request.headers);
         console.log('Connection params:', ctx.connectionParams);
-        const session = await auth.api.getSession({
-          headers: fromNodeHeaders(ctx.extra.request.headers),
-        });
+        // const session = await auth.api.getSession({
+        //   headers: fromNodeHeaders(ctx.extra.request.headers),
+        // });
 
+        // @ts-ignore
+        const { user, session } = ctx.connectionParams.session.data;
+
+        console.log('>>>>> user:', user);
         console.log('>>>>> session:', session);
-
         return {
-          user: session?.user || null,
-          session,
-          auth,
+          user: user || null,
+          session: session || null,
         };
       },
       onConnect: () => {
