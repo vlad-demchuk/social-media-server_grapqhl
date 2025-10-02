@@ -183,7 +183,7 @@ export const resolvers: Resolvers = {
           entityType: 'POST',
           preview: 'Your post was liked',
           type: NotificationType.Like,
-          recipientId: post.id
+          recipientId: post.owner.id,
         };
 
         await pubsub.publish('NOTIFICATION_ADDED', { notificationAdded: notificationPayload });
@@ -391,5 +391,25 @@ export const resolvers: Resolvers = {
         },
       ),
     },
+    notificationAdded: {
+      subscribe: withFilter<{ notificationAdded: NotificationPayload }, {}, Context>(
+        () => pubsub.asyncIterableIterator(
+          'NOTIFICATION_ADDED'),
+        async (payload, _, context) => {
+          if (!payload) {
+            return false;
+          }
+
+          const notificationAdded = payload.notificationAdded;
+
+          if (!context.user.id) {
+            return false;
+          }
+
+          return context.user.id !== notificationAdded.actor.id && context.user.id === notificationAdded.recipientId;
+        },
+      ),
+    },
+
   },
 };

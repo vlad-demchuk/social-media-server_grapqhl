@@ -254,5 +254,5 @@ type Mutation {
 # Subscriptions
 type Subscription {
   messageAdded: MessagePayload!
-  notificationAdded: Notification!
+  notificationAdded: NotificationPayload!
 }

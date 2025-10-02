@@ -330,7 +330,7 @@ export type QueryUserPostsArgs = {
 export type Subscription = {
   __typename?: 'Subscription';
   messageAdded: MessagePayload;
-  notificationAdded: Notification;
+  notificationAdded: NotificationPayload;
 };
 
 /** Users */
@@ -643,7 +643,7 @@ export type QueryResolvers<ContextType = Context, ParentType extends ResolversPa
 
 export type SubscriptionResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Subscription'] = ResolversParentTypes['Subscription']> = {
   messageAdded?: SubscriptionResolver<ResolversTypes['MessagePayload'], "messageAdded", ParentType, ContextType>;
-  notificationAdded?: SubscriptionResolver<ResolversTypes['Notification'], "notificationAdded", ParentType, ContextType>;
+  notificationAdded?: SubscriptionResolver<ResolversTypes['NotificationPayload'], "notificationAdded", ParentType, ContextType>;
 };
 
 export type UserResolvers<ContextType = Context, ParentType extends ResolversParentTypes['User'] = ResolversParentTypes['User']> = {

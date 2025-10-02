@@ -16,7 +16,7 @@ import { useServer } from 'graphql-ws/use/ws';
 import { resolvers } from './resolvers';
 
 import { fromNodeHeaders, toNodeHandler } from 'better-auth/node';
-import { auth } from './lib/auth';
+import { auth, Session, User } from './lib/auth';
 
 const PORT = process.env.PORT || 4000;
 const HOST = process.env.PORT ? '0.0.0.0' : '127.0.0.1';
@@ -77,14 +77,32 @@ const HOST = process.env.PORT ? '0.0.0.0' : '127.0.0.1';
           headers: fromNodeHeaders(req.headers),
         });
 
+        // Workaround for better auth defect
+        const user = session?.user ? {
+          ...session.user,
+          id: Number(session.user.id),
+        } : null;
+
         return {
-          user: session?.user || null,
-          session,
+          user,
+          session: {
+            ...session,
+            user
+          },
           auth,
         };
       },
     }),
   );
+
+  interface ConnectionParams {
+    session?: {
+      data: {
+        session: Session;
+        user: User;
+      };
+    };
+  }
 
   const wsServer = new WebSocketServer({
     server: httpServer,
@@ -97,18 +115,32 @@ const HOST = process.env.PORT ? '0.0.0.0' : '127.0.0.1';
       context: async (ctx) => {
         console.log('Handshake headers:', ctx.extra.request.headers);
         console.log('Connection params:', ctx.connectionParams);
+
+        // TODO: Implement token verification for websockets
+        // At the moment it's kinda challenge since NextJs rewrites don't work for ws/wss protocol,
+        // and the server placed on another domain, that is the issue for cookie. As a possible workaround - JWT token.
+        // For now just skipping this passing the session object from client. NOT SECURE!!!
+
         // const session = await auth.api.getSession({
         //   headers: fromNodeHeaders(ctx.extra.request.headers),
         // });
 
-        // @ts-ignore
-        const { user, session } = ctx.connectionParams.session.data;
+        const params = ctx.connectionParams as ConnectionParams;
 
-        console.log('>>>>> user:', user);
-        console.log('>>>>> session:', session);
+        const { user, session } = params?.session?.data as { session: Session, user: User } || {};
+
+        // Workaround for better auth defect
+        const sessionUser = user ? {
+          ...user,
+          id: Number(user.id),
+        } : null;
+
         return {
-          user: user || null,
-          session: session || null,
+          user: sessionUser,
+          session: {
+            ...session,
+            user
+          },
         };
       },
       onConnect: () => {
