@@ -250,8 +250,7 @@ export type NotificationPayload = {
 
 export enum NotificationType {
   Comment = 'COMMENT',
-  Like = 'LIKE',
-  Message = 'MESSAGE'
+  Like = 'LIKE'
 }
 
 /** Posts */

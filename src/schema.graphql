@@ -173,7 +173,7 @@ type CreateMessageResponse {
 }
 
 # Notifications
-enum NotificationType { LIKE COMMENT MESSAGE }
+enum NotificationType { LIKE COMMENT }
 
 type Notification {
   id: Int!

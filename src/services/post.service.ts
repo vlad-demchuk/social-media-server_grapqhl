@@ -1,5 +1,5 @@
 import { pool } from '../db/db';
-import { CreatePostInput } from '../types';
+import { CreatePostInput, Post } from '../types';
 
 export const getAll = async (currentUserId: number) => {
   const result = await pool.query(
@@ -66,7 +66,7 @@ export const getPostsByUserName = async (currentUserId: number, userName: string
   return result.rows;
 };
 
-export const getById = async (userId: number, postId: number) => {
+export const getById = async (userId: number, postId: number): Promise<Post> => {
   const result = await pool.query(
     `
         SELECT p.id,

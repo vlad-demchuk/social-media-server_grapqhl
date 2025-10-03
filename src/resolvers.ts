@@ -243,6 +243,29 @@ export const resolvers: Resolvers = {
           postId: args.input.postId,
         });
 
+        const { id, image, name, emailVerified, updatedAt, createdAt, email } = context.user;
+
+        const commentedPost = await postService.getById(context.user.id, args.input.postId);
+
+        const notificationPayload: NotificationPayload = {
+          actor: {
+            id,
+            username: name,
+            email,
+            emailVerified,
+            createdAt,
+            updatedAt,
+            image,
+          },
+          entityId: comment.id,
+          entityType: 'COMMENT',
+          preview: 'Your post was commented',
+          type: NotificationType.Comment,
+          recipientId: commentedPost.owner.id,
+        };
+
+        await pubsub.publish('NOTIFICATION_ADDED', { notificationAdded: notificationPayload });
+
         return {
           code: 200,
           success: true,

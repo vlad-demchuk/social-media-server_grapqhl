@@ -1,4 +1,4 @@
-import { CreateCommentInput } from '../types';
+import { Comment, CreateCommentInput } from '../types';
 import { pool } from '../db/db';
 
 export const getByPostId = async (postId: number) => {
@@ -33,7 +33,7 @@ export const create = async ({
   content,
   userId,
   postId,
-}: CreateCommentInput & { userId: number }) => {
+}: CreateCommentInput & { userId: number }): Promise<Comment> => {
   const result = await pool.query(
     `
       WITH inserted AS (
