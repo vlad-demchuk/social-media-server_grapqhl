@@ -130,6 +130,7 @@ type Conversation {
   createdAt: DateTime!
   participants: [User!]!
   lastMessage: Message
+  creator: User!
 }
 
 type CreateConversationResponse {
@@ -157,7 +158,7 @@ type MessagePayload {
   content: String!
   createdAt: DateTime!
   updatedAt: DateTime!
-  sender: ConversationParticipant!
+  sender: User!
   conversationId: Int!
 }
 
@@ -255,4 +256,5 @@ type Mutation {
 type Subscription {
   messageAdded: MessagePayload!
   notificationAdded: NotificationPayload!
+  conversationsUpdated: Conversation!
 }

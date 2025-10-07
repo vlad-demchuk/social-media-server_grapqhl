@@ -34,6 +34,7 @@ export type Comment = {
 export type Conversation = {
   __typename?: 'Conversation';
   createdAt: Scalars['DateTime']['output'];
+  creator: User;
   id: Scalars['Int']['output'];
   lastMessage?: Maybe<Message>;
   name?: Maybe<Scalars['String']['output']>;
@@ -160,7 +161,7 @@ export type MessagePayload = {
   conversationId: Scalars['Int']['output'];
   createdAt: Scalars['DateTime']['output'];
   id: Scalars['Int']['output'];
-  sender: ConversationParticipant;
+  sender: User;
   updatedAt: Scalars['DateTime']['output'];
 };
 
@@ -328,6 +329,7 @@ export type QueryUserPostsArgs = {
 
 export type Subscription = {
   __typename?: 'Subscription';
+  conversationsUpdated: Conversation;
   messageAdded: MessagePayload;
   notificationAdded: NotificationPayload;
 };
@@ -489,6 +491,7 @@ export type CommentResolvers<ContextType = Context, ParentType extends Resolvers
 
 export type ConversationResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Conversation'] = ResolversParentTypes['Conversation']> = {
   createdAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
+  creator?: Resolver<ResolversTypes['User'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   lastMessage?: Resolver<Maybe<ResolversTypes['Message']>, ParentType, ContextType>;
   name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -577,7 +580,7 @@ export type MessagePayloadResolvers<ContextType = Context, ParentType extends Re
   conversationId?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   createdAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
-  sender?: Resolver<ResolversTypes['ConversationParticipant'], ParentType, ContextType>;
+  sender?: Resolver<ResolversTypes['User'], ParentType, ContextType>;
   updatedAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
@@ -641,6 +644,7 @@ export type QueryResolvers<ContextType = Context, ParentType extends ResolversPa
 };
 
 export type SubscriptionResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Subscription'] = ResolversParentTypes['Subscription']> = {
+  conversationsUpdated?: SubscriptionResolver<ResolversTypes['Conversation'], "conversationsUpdated", ParentType, ContextType>;
   messageAdded?: SubscriptionResolver<ResolversTypes['MessagePayload'], "messageAdded", ParentType, ContextType>;
   notificationAdded?: SubscriptionResolver<ResolversTypes['NotificationPayload'], "notificationAdded", ParentType, ContextType>;
 };

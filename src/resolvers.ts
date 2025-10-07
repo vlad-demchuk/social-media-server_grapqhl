@@ -4,7 +4,7 @@ import * as likeService from './services/like.service';
 import * as commentService from './services/comment.service';
 import * as conversationService from './services/conversation.service';
 import * as messageService from './services/message.service';
-import { ConversationParticipant, MessagePayload, NotificationPayload, NotificationType, Resolvers } from './types';
+import { Conversation, MessagePayload, NotificationPayload, NotificationType, Resolvers } from './types';
 import { GraphQLError } from 'graphql/error';
 import { PubSub, withFilter } from 'graphql-subscriptions';
 import { Context } from './context';
@@ -315,12 +315,22 @@ export const resolvers: Resolvers = {
       }
 
       try {
-        const conversation = await conversationService.createDirect(context.user.id, args.userId);
+        let conversation = await conversationService.getById(context.user.id, args.userId);
+        let isConversationExisting = !!conversation;
+
+        if (!isConversationExisting) {
+          conversation = await conversationService.createDirect(context.user.id, args.userId);
+
+          const sender = conversation.participants.find((participant) => participant.id === context.user.id);
+          pubsub.publish('CONVERSATIONS_UPDATED', {
+            conversationsUpdated: { ...conversation, sender },
+          });
+        }
 
         return {
           code: 200,
           success: true,
-          message: 'Conversation successfully created!',
+          message: isConversationExisting ? 'Conversation is already existing!' : 'Conversation successfully created!',
           conversation,
         };
       } catch (error) {
@@ -348,21 +358,13 @@ export const resolvers: Resolvers = {
           content: args.content,
         });
 
-        const { user: { id, name, image } } = context;
-
-        const sender: ConversationParticipant = {
-          id,
-          username: name,
-          image,
-        };
-
         const messageAdded: MessagePayload = {
           id: message.id,
           conversationId: args.conversationId,
           content: message.content,
           createdAt: message.createdAt,
           updatedAt: message.updatedAt,
-          sender,
+          sender: message.sender,
         };
 
         pubsub.publish('MESSAGE_ADDED', {
@@ -433,6 +435,37 @@ export const resolvers: Resolvers = {
         },
       ),
     },
+    conversationsUpdated: {
+      subscribe: withFilter<{ conversationsUpdated: Conversation }, {}, Context>(
+        () => pubsub.asyncIterableIterator(
+          'CONVERSATIONS_UPDATED'),
+        async (payload, _, context) => {
+          console.log('----------------------------------------------------');
+          console.log('CONVERSATIONS_UPDATED');
+          if (!payload) {
+            return false;
+          }
 
+          const conversationsUpdated = payload.conversationsUpdated;
+          console.log('>>>>> conversationsUpdated:', conversationsUpdated);
+
+          if (!context.user.id) {
+            return false;
+          }
+
+          // if (context.user.id === conversationsUpdated.creator.id
+          //   || conversationsUpdated.lastMessage.sender.id === context.user.id) {
+          //   return false;
+          // }
+
+          const isParticipant = await conversationService.isUserInChat(
+            context?.user?.id,
+            conversationsUpdated.id,
+          );
+
+          return isParticipant;
+        },
+      ),
+    },
   },
 };

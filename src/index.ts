@@ -113,9 +113,6 @@ const HOST = process.env.PORT ? '0.0.0.0' : '127.0.0.1';
     {
       schema,
       context: async (ctx) => {
-        console.log('Handshake headers:', ctx.extra.request.headers);
-        console.log('Connection params:', ctx.connectionParams);
-
         // TODO: Implement token verification for websockets
         // At the moment it's kinda challenge since NextJs rewrites don't work for ws/wss protocol,
         // and the server placed on another domain, that is the issue for cookie. As a possible workaround - JWT token.
