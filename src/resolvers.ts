@@ -315,15 +315,13 @@ export const resolvers: Resolvers = {
       }
 
       try {
-        let conversation = await conversationService.getById(context.user.id, args.userId);
+        let conversation = await conversationService.getDirectByUserIds(context.user.id, args.userId);
         let isConversationExisting = !!conversation;
 
         if (!isConversationExisting) {
           conversation = await conversationService.createDirect(context.user.id, args.userId);
-
-          const sender = conversation.participants.find((participant) => participant.id === context.user.id);
           pubsub.publish('CONVERSATIONS_UPDATED', {
-            conversationsUpdated: { ...conversation, sender },
+            conversationsUpdated: conversation,
           });
         }
 
@@ -371,10 +369,16 @@ export const resolvers: Resolvers = {
           messageAdded,
         });
 
+        const conversation = await conversationService.getById(args.conversationId);
+
+        pubsub.publish('CONVERSATIONS_UPDATED', {
+          conversationsUpdated: conversation,
+        });
+
         return {
           code: 200,
           success: true,
-          message: 'Conversation successfully created!',
+          message: 'Message successfully created!',
           createdMessage: message,
         };
       } catch (error) {
@@ -447,16 +451,10 @@ export const resolvers: Resolvers = {
           }
 
           const conversationsUpdated = payload.conversationsUpdated;
-          console.log('>>>>> conversationsUpdated:', conversationsUpdated);
 
           if (!context.user.id) {
             return false;
           }
-
-          // if (context.user.id === conversationsUpdated.creator.id
-          //   || conversationsUpdated.lastMessage.sender.id === context.user.id) {
-          //   return false;
-          // }
 
           const isParticipant = await conversationService.isUserInChat(
             context?.user?.id,

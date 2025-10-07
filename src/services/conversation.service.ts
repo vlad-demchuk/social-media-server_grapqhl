@@ -80,7 +80,7 @@ export const getAll = async (currentUserId: number) => {
   return result.rows;
 }
 
-export const getById = async (currentUserId: number, secondUserId: number): Promise<Conversation | null> => {
+export const getDirectByUserIds = async (currentUserId: number, secondUserId: number): Promise<Conversation | null> => {
   // Check if conversation exists
   const existing = await pool.query(
     `
@@ -96,47 +96,73 @@ export const getById = async (currentUserId: number, secondUserId: number): Prom
   );
 
   if (existing.rows.length > 0) {
-    // Return full conversation object with creator
-    const { rows } = await pool.query(`
-        SELECT c.id,
-               c.name,
-               c.type,
-               c.created_at AS "createdAt",
-               json_build_object(
-                       'id', creator.id,
-                       'username', creator.username,
-                       'email', creator.email,
-                       'image', creator.image,
-                       'createdAt', creator.created_at,
-                       'emailVerified', creator.email_verified,
-                       'updatedAt', creator.updated_at
-               )            AS creator,
-               json_agg(
-                       json_build_object(
-                               'id', u.id,
-                               'username', u.username,
-                               'email', u.email,
-                               'image', u.image,
-                               'createdAt', u.created_at,
-                               'emailVerified', u.email_verified,
-                               'updatedAt', u.updated_at
-                       )
-               )            AS participants,
-               NULL         as "lastMessage"
-        FROM conversations c
-                 JOIN conversation_participants cp ON cp.conversation_id = c.id
-                 JOIN users u ON u.id = cp.user_id
-                 JOIN users creator ON creator.id = c.creator_id
-        WHERE c.id = $1
-        GROUP BY c.id, creator.id
-    `, [existing.rows[0].id]);
-
-    return rows[0];
+    return await getById(existing.rows[0].id)
   } else {
     return null;
   }
 };
 
+export const getById = async (conversationId: number) => {
+  // Return full conversation object with creator and lastMessage
+  const { rows } = await pool.query(`
+      SELECT 
+        c.id,
+        c.name,
+        c.type,
+        c.created_at AS "createdAt",
+        json_build_object(
+          'id', creator.id,
+          'username', creator.username,
+          'email', creator.email,
+          'image', creator.image,
+          'createdAt', creator.created_at,
+          'emailVerified', creator.email_verified,
+          'updatedAt', creator.updated_at
+        ) AS creator,
+        json_agg(
+          json_build_object(
+            'id', u.id,
+            'username', u.username,
+            'email', u.email,
+            'image', u.image,
+            'createdAt', u.created_at,
+            'emailVerified', u.email_verified,
+            'updatedAt', u.updated_at
+          )
+        ) AS participants,
+        -- Subquery to get the last message
+        (
+          SELECT json_build_object(
+            'id', m.id,
+            'content', m.content,
+            'createdAt', m.created_at,
+            'updatedAt', m.updated_at,
+            'sender', json_build_object(
+                    'id', sender.id,
+                    'username', sender.username,
+                    'email', sender.email,
+                    'image', sender.image,
+                    'createdAt', sender.created_at,
+                    'emailVerified', sender.email_verified,
+                    'updatedAt', sender.updated_at
+                      )
+                 )
+          FROM messages m
+          LEFT JOIN users sender ON sender.id = m.sender_id
+          WHERE m.conversation_id = c.id
+          ORDER BY m.created_at DESC
+          LIMIT 1
+        ) AS "lastMessage"
+      FROM conversations c
+      JOIN conversation_participants cp ON cp.conversation_id = c.id
+      JOIN users u ON u.id = cp.user_id
+      JOIN users creator ON creator.id = c.creator_id
+      WHERE c.id = $1
+      GROUP BY c.id, creator.id
+  `, [conversationId]);
+
+  return rows[0] || null; // Return null if no conversation is found
+};
 
 export const createDirect = async (currentUserId: number, secondUserId: number): Promise<Conversation> => {
   // Create new
@@ -188,7 +214,6 @@ export const createDirect = async (currentUserId: number, secondUserId: number):
                JOIN users creator ON creator.id = c.creator_id
       WHERE c.id = $1
       GROUP BY c.id, creator.id
-
   `, [conversation.id]);
 
   return rows[0];
