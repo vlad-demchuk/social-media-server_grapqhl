@@ -40,6 +40,7 @@ export const getAll = async (currentUserId: number) => {
           (
               SELECT json_build_object(
                   'id', m.id,
+                  'conversationId', m.conversation_id,
                   'content', m.content,
                   'createdAt', m.created_at,
                   'updatedAt', m.updated_at,
@@ -134,6 +135,7 @@ export const getById = async (conversationId: number) => {
         (
           SELECT json_build_object(
             'id', m.id,
+            'conversationId', m.conversation_id,
             'content', m.content,
             'createdAt', m.created_at,
             'updatedAt', m.updated_at,

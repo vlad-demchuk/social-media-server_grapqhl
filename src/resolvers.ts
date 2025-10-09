@@ -4,7 +4,7 @@ import * as likeService from './services/like.service';
 import * as commentService from './services/comment.service';
 import * as conversationService from './services/conversation.service';
 import * as messageService from './services/message.service';
-import { Conversation, MessagePayload, NotificationPayload, NotificationType, Resolvers } from './types';
+import { Conversation, Message, NotificationPayload, NotificationType, Resolvers } from './types';
 import { GraphQLError } from 'graphql/error';
 import { PubSub, withFilter } from 'graphql-subscriptions';
 import { Context } from './context';
@@ -356,7 +356,7 @@ export const resolvers: Resolvers = {
           content: args.content,
         });
 
-        const messageAdded: MessagePayload = {
+        const messageAdded: Message = {
           id: message.id,
           conversationId: args.conversationId,
           content: message.content,
@@ -393,7 +393,7 @@ export const resolvers: Resolvers = {
   },
   Subscription: {
     messageAdded: {
-      subscribe: withFilter<{ messageAdded: MessagePayload }, {}, Context>(
+      subscribe: withFilter<{ messageAdded: Message }, {}, Context>(
         () => pubsub.asyncIterableIterator(
           'MESSAGE_ADDED'),
         async (payload, _, context) => {
@@ -407,9 +407,9 @@ export const resolvers: Resolvers = {
             return false;
           }
 
-          if (context.user.id === messageAdded.sender.id) {
-            return false;
-          }
+          // if (context.user.id === messageAdded.sender.id) {
+          //   return false;
+          // }
 
           const isParticipant = await conversationService.isUserInChat(
             context?.user?.id,

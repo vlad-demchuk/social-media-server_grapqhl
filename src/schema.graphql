@@ -151,14 +151,6 @@ type Message {
   createdAt: DateTime!
   updatedAt: DateTime!
   sender: User!
-}
-
-type MessagePayload {
-  id: Int!
-  content: String!
-  createdAt: DateTime!
-  updatedAt: DateTime!
-  sender: User!
   conversationId: Int!
 }
 
@@ -254,7 +246,7 @@ type Mutation {
 
 # Subscriptions
 type Subscription {
-  messageAdded: MessagePayload!
+  messageAdded: Message!
   notificationAdded: NotificationPayload!
   conversationsUpdated: Conversation!
 }
