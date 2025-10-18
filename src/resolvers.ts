@@ -4,6 +4,7 @@ import * as likeService from './services/like.service';
 import * as commentService from './services/comment.service';
 import * as conversationService from './services/conversation.service';
 import * as messageService from './services/message.service';
+import * as notificationService from './services/notification.service';
 import { Conversation, Message, NotificationPayload, NotificationType, Resolvers } from './types';
 import { GraphQLError } from 'graphql/error';
 import { PubSub, withFilter } from 'graphql-subscriptions';
@@ -112,6 +113,18 @@ export const resolvers: Resolvers = {
       const messages = await messageService.getConversationMessages(args.conversationId);
 
       return messages;
+    },
+    // Notifications
+    notifications: async (_, __, context) => {
+      if (!context.user) {
+        throw new GraphQLError('Authentication required', {
+          extensions: { code: 'UNAUTHENTICATED' },
+        });
+      }
+
+      const notifications = await notificationService.getAll(context.user.id);
+
+      return notifications;
     },
   },
   Mutation: {
