@@ -1,5 +1,5 @@
-import { pool } from '../db/db';
-import { Conversation } from '../types';
+import { pool } from '../../db/db';
+import { Conversation } from '../../generated-types/graphql';
 
 // TODO: Implement pagination/infinite scrolling
 
