@@ -42,7 +42,7 @@ export const auth = betterAuth({
       expiresAt: 'expires_at',
       ipAddress: 'ip_address',
       userAgent: 'user_agent',
-      userId: 'user_id'
+      userId: 'user_id',
     },
   },
   account: {

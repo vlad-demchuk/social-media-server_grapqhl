@@ -30,8 +30,8 @@ export const typeDefs = gql`
     "Create a new conversation message"
     createMessage(conversationId: Int!, content: String!): CreateMessageResponse!
   }
-  
+
   extend type Subscription {
-      messageAdded: Message!
+    messageAdded: Message!
   }
 `;

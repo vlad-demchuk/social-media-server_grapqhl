@@ -66,7 +66,7 @@ const HOST = process.env.PORT ? '0.0.0.0' : '127.0.0.1';
       messageModule.typeDefs,
       notificationModule.typeDefs,
       postModule.typeDefs,
-      userModule.typeDefs
+      userModule.typeDefs,
     ],
     resolvers: [
       commentModule.resolvers,
@@ -75,7 +75,7 @@ const HOST = process.env.PORT ? '0.0.0.0' : '127.0.0.1';
       messageModule.resolvers,
       notificationModule.resolvers,
       postModule.resolvers,
-      userModule.resolvers
+      userModule.resolvers,
     ] as Resolvers[],
   });
 
@@ -168,7 +168,7 @@ const HOST = process.env.PORT ? '0.0.0.0' : '127.0.0.1';
             ...session,
             user,
           },
-          pubsub
+          pubsub,
         };
       },
       onConnect: () => {

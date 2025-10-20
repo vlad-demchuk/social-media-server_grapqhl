@@ -76,5 +76,5 @@ export const resolvers: LikeModule.Resolvers = {
         };
       }
     },
-  }
-}
+  },
+};

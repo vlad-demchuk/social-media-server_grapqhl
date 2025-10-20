@@ -58,7 +58,6 @@ export const resolvers: ConversationModule.Resolvers = {
     conversationsUpdated: {
       subscribe: withFilter<{ conversationsUpdated: Conversation }, {}, Context>(
         (_parent, _args, context) => {
-                    console.log('>>>>> context:', context);
           return context.pubsub.asyncIterableIterator(
             'CONVERSATIONS_UPDATED');
         },
