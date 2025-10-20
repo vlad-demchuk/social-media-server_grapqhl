@@ -1,5 +1,5 @@
 import { GraphQLResolveInfo, GraphQLScalarType, GraphQLScalarTypeConfig } from 'graphql';
-import { Context } from './context';
+import { Context } from '../context';
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
@@ -18,7 +18,6 @@ export type Scalars = {
   DateTime: { input: any; output: any; }
 };
 
-/** Comments */
 export type Comment = {
   __typename?: 'Comment';
   /** Comment author */
@@ -42,7 +41,6 @@ export type Conversation = {
   type: Scalars['String']['output'];
 };
 
-/** Conversations */
 export type ConversationParticipant = {
   __typename?: 'ConversationParticipant';
   id: Scalars['Int']['output'];
@@ -132,7 +130,6 @@ export type DeletePostResponse = {
   success: Scalars['Boolean']['output'];
 };
 
-/** Likes */
 export type LikePostResponse = {
   __typename?: 'LikePostResponse';
   /** HTTP-like status code */
@@ -145,7 +142,6 @@ export type LikePostResponse = {
   success: Scalars['Boolean']['output'];
 };
 
-/** Messages */
 export type Message = {
   __typename?: 'Message';
   content: Scalars['String']['output'];
@@ -240,12 +236,10 @@ export type NotificationPayload = {
   type: NotificationType;
 };
 
-export enum NotificationType {
-  Comment = 'COMMENT',
-  Like = 'LIKE'
-}
+export type NotificationType =
+  | 'COMMENT'
+  | 'LIKE';
 
-/** Posts */
 export type Post = {
   __typename?: 'Post';
   /** Number of comments on this post */
@@ -325,7 +319,6 @@ export type Subscription = {
   notificationAdded: NotificationPayload;
 };
 
-/** Users */
 export type User = {
   __typename?: 'User';
   /** Creation timestamp */
@@ -662,3 +655,5 @@ export type Resolvers<ContextType = Context> = {
   User?: UserResolvers<ContextType>;
 };
 
+
+export type DateTime = Scalars["DateTime"];
