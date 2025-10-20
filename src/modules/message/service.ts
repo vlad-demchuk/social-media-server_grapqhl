@@ -1,5 +1,5 @@
-import { pool } from '../db/db';
-import { Message } from '../types';
+import { pool } from '../../db/db';
+import { Message } from '../../generated-types/graphql';
 
 export const getConversationMessages = async (conversationId: number) => {
   const result = await pool.query(
