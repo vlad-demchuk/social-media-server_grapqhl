@@ -1,6 +1,6 @@
-import { pool } from '../db/db';
-import { getById as getPostById } from './post.service';
-import { Post } from '../types';
+import { pool } from '../../db/db';
+import { getById as getPostById } from '../post/service';
+import { Post } from '../../generated-types/graphql';
 
 export const likePost = async (userId: number, postId: number): Promise<Post> => {
   await pool.query(
