@@ -1,4 +1,4 @@
-import { pool } from '../../db/db';
+import { pool } from '../../db';
 import { getById as getPostById } from '../post/service';
 import { Post } from '../../generated-types/graphql';
 

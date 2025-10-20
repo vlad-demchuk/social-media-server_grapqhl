@@ -1,4 +1,4 @@
-import { pool } from '../../db/db';
+import { pool } from '../../db';
 import { Message } from '../../generated-types/graphql';
 
 export const getConversationMessages = async (conversationId: number) => {

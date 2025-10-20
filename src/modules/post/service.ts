@@ -1,4 +1,4 @@
-import { pool } from '../../db/db';
+import { pool } from '../../db';
 import { CreatePostInput, Post } from '../../generated-types/graphql';
 
 export const getAll = async (currentUserId: number) => {

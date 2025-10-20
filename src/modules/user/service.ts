@@ -1,4 +1,4 @@
-import { pool } from '../../db/db';
+import { pool } from '../../db';
 
 export const getAll = async () => {
   const result = await pool.query(`

@@ -1,5 +1,5 @@
 import { Comment, CreateCommentInput } from '../../generated-types/graphql';
-import { pool } from '../../db/db';
+import { pool } from '../../db';
 
 export const getByPostId = async (postId: number) => {
   const result = await pool.query(
