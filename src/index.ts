@@ -1,22 +1,30 @@
-import express from 'express';
 import http from 'http';
-import cors from 'cors';
+import { readFileSync } from 'fs';
 import 'dotenv/config';
+import express from 'express';
+import path from 'path';
+import cors from 'cors';
 
 import { ApolloServer } from '@apollo/server';
 import { ApolloServerPluginDrainHttpServer } from '@apollo/server/plugin/drainHttpServer';
 import { expressMiddleware } from '@as-integrations/express5';
 import { makeExecutableSchema } from '@graphql-tools/schema';
-
-import { readFileSync } from 'fs';
-import path from 'path';
 import { gql } from 'graphql-tag';
+
 import { WebSocketServer } from 'ws';
 import { useServer } from 'graphql-ws/use/ws';
-import { resolvers } from './resolvers';
 
 import { fromNodeHeaders, toNodeHandler } from 'better-auth/node';
 import { auth, Session, User } from './lib/auth';
+import * as commentModule from './modules/comment';
+import * as conversationModule from './modules/conversation';
+import * as likeModule from './modules/like';
+import * as messageModule from './modules/message';
+import * as notificationModule from './modules/notification';
+import * as postModule from './modules/post';
+import * as userModule from './modules/user';
+import { PubSub } from 'graphql-subscriptions';
+import { Resolvers } from './generated-types/graphql';
 
 const PORT = process.env.PORT || 4000;
 const HOST = process.env.PORT ? '0.0.0.0' : '127.0.0.1';
@@ -24,6 +32,7 @@ const HOST = process.env.PORT ? '0.0.0.0' : '127.0.0.1';
 (async () => {
   const app = express();
   const httpServer = http.createServer(app);
+  const pubsub = new PubSub();
 
   app.use(
     cors({
@@ -48,7 +57,27 @@ const HOST = process.env.PORT ? '0.0.0.0' : '127.0.0.1';
     }),
   );
 
-  const schema = makeExecutableSchema({ typeDefs, resolvers });
+  const schema = makeExecutableSchema({
+    typeDefs: [
+      typeDefs,
+      commentModule.typeDefs,
+      conversationModule.typeDefs,
+      likeModule.typeDefs,
+      messageModule.typeDefs,
+      notificationModule.typeDefs,
+      postModule.typeDefs,
+      userModule.typeDefs
+    ],
+    resolvers: [
+      commentModule.resolvers,
+      conversationModule.resolvers,
+      likeModule.resolvers,
+      messageModule.resolvers,
+      notificationModule.resolvers,
+      postModule.resolvers,
+      userModule.resolvers
+    ] as Resolvers[],
+  });
 
   const server = new ApolloServer({
     schema,
@@ -87,9 +116,10 @@ const HOST = process.env.PORT ? '0.0.0.0' : '127.0.0.1';
           user,
           session: {
             ...session,
-            user
+            user,
           },
           auth,
+          pubsub,
         };
       },
     }),
@@ -136,8 +166,9 @@ const HOST = process.env.PORT ? '0.0.0.0' : '127.0.0.1';
           user: sessionUser,
           session: {
             ...session,
-            user
+            user,
           },
+          pubsub
         };
       },
       onConnect: () => {
