@@ -1,9 +1,8 @@
-import { pool } from '../db/db';
+import { pool } from '../../db/db';
 
 export const getAll = async (recipientId: number) => {
   const { rows } = await pool.query(
-    `SELECT 
-            n.id as id,
+    `SELECT n.id           as id,
             n.recipient_id as "recipientId",
             json_build_object(
                     'id', u.id,
@@ -13,15 +12,16 @@ export const getAll = async (recipientId: number) => {
                     'createdAt', u.created_at,
                     'emailVerified', u.email_verified,
                     'updatedAt', u.updated_at
-            ) as actor,
-            n.type as type,
-            n.entity_id as "entityId",
-            n.entity_type as "entityType",
-            n.preview as preview,
+            )              as actor,
+            n.type         as type,
+            n.entity_id    as "entityId",
+            n.entity_type  as "entityType",
+            n.preview      as preview,
             n.read as read,
             n.created_at as "createdAt"
      FROM notifications n
-              JOIN users u ON u.id = n.actor_id
+         JOIN users u
+     ON u.id = n.actor_id
      WHERE n.recipient_id = $1
      ORDER BY n.created_at DESC`,
     [recipientId],
