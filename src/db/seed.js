@@ -12,7 +12,7 @@ async function seed() {
 
     // Ensure clean state (CAREFUL in production!)
     await pool.query(`
-      TRUNCATE likes, comments, follows, posts, users RESTART IDENTITY CASCADE;
+      TRUNCATE likes, comments, posts, users RESTART IDENTITY CASCADE;
     `);
 
     // USERS
@@ -73,21 +73,6 @@ async function seed() {
       (9, 6, 'Backend rocks.', NOW()),
       (10, 7, 'Random but fun!', NOW()),
       (1, 8, 'React is the best!', NOW());
-    `);
-
-    // FOLLOWS
-    await pool.query(`
-      INSERT INTO follows (follower_id, followed_id, created_at) VALUES
-      (1, 2, NOW() - interval '5 days'),
-      (2, 3, NOW() - interval '4 days'),
-      (3, 4, NOW() - interval '4 days'),
-      (4, 5, NOW() - interval '3 days'),
-      (5, 6, NOW() - interval '3 days'),
-      (6, 7, NOW() - interval '2 days'),
-      (7, 8, NOW() - interval '2 days'),
-      (8, 9, NOW() - interval '1 days'),
-      (9, 10, NOW() - interval '1 days'),
-      (10, 1, NOW());
     `);
 
     console.log('✅ Seeding completed!');

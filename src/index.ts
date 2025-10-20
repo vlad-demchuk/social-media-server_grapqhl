@@ -1,20 +1,19 @@
 import http from 'http';
-import { readFileSync } from 'fs';
 import 'dotenv/config';
 import express from 'express';
-import path from 'path';
 import cors from 'cors';
 
 import { ApolloServer } from '@apollo/server';
 import { ApolloServerPluginDrainHttpServer } from '@apollo/server/plugin/drainHttpServer';
 import { expressMiddleware } from '@as-integrations/express5';
 import { makeExecutableSchema } from '@graphql-tools/schema';
-import { gql } from 'graphql-tag';
 
 import { WebSocketServer } from 'ws';
 import { useServer } from 'graphql-ws/use/ws';
+import { PubSub } from 'graphql-subscriptions';
 
 import { fromNodeHeaders, toNodeHandler } from 'better-auth/node';
+
 import { auth, Session, User } from './lib/auth';
 import * as commentModule from './modules/comment';
 import * as conversationModule from './modules/conversation';
@@ -23,8 +22,8 @@ import * as messageModule from './modules/message';
 import * as notificationModule from './modules/notification';
 import * as postModule from './modules/post';
 import * as userModule from './modules/user';
-import { PubSub } from 'graphql-subscriptions';
 import { Resolvers } from './generated-types/graphql';
+import { typeDefs } from './typeDefs';
 
 const PORT = process.env.PORT || 4000;
 const HOST = process.env.PORT ? '0.0.0.0' : '127.0.0.1';
@@ -40,22 +39,16 @@ const HOST = process.env.PORT ? '0.0.0.0' : '127.0.0.1';
         process.env.FRONTEND_URL,
         'http://localhost:3000',
         'https://studio.apollographql.com',
-      ], // Replace with your frontend's origin
-      methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'], // Specify allowed HTTP methods
-      credentials: true, // Allow credentials (cookies, authorization headers, etc.)
-      allowedHeaders: ['Content-Type', 'Authorization', 'Apollo-Require-Preflight'], // Add Apollo headers
+      ],
+      methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+      credentials: true,
+      allowedHeaders: ['Content-Type', 'Authorization', 'Apollo-Require-Preflight'],
     }),
   );
 
   app.use('/graphql', express.json());
 
   app.all('/api/auth/{*any}', toNodeHandler(auth));
-
-  const typeDefs = gql(
-    readFileSync(path.resolve(__dirname, './schema.graphql'), {
-      encoding: 'utf-8',
-    }),
-  );
 
   const schema = makeExecutableSchema({
     typeDefs: [
