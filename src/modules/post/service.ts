@@ -1,5 +1,5 @@
-import { pool } from '../db/db';
-import { CreatePostInput, Post } from '../types';
+import { pool } from '../../db/db';
+import { CreatePostInput, Post } from '../../generated-types/graphql';
 
 export const getAll = async (currentUserId: number) => {
   const result = await pool.query(
