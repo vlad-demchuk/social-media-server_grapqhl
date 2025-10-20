@@ -1,5 +1,4 @@
-import { pool } from '../db/db';
-import { User } from '../types';
+import { pool } from '../../db/db';
 
 export const getAll = async () => {
   const result = await pool.query(`
