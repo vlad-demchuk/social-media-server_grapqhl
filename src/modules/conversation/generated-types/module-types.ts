@@ -1,5 +1,4 @@
 import * as Types from "../../../generated-types/graphql";
-import * as gm from "graphql-modules";
 export namespace ConversationModule {
   interface DefinedFields {
     ConversationParticipant: 'id' | 'username' | 'image';
@@ -34,46 +33,5 @@ export namespace ConversationModule {
     Query?: QueryResolvers;
     Mutation?: MutationResolvers;
     Subscription?: SubscriptionResolvers;
-  };
-  
-  export interface MiddlewareMap {
-    '*'?: {
-      '*'?: gm.Middleware[];
-    };
-    ConversationParticipant?: {
-      '*'?: gm.Middleware[];
-      id?: gm.Middleware[];
-      username?: gm.Middleware[];
-      image?: gm.Middleware[];
-    };
-    Conversation?: {
-      '*'?: gm.Middleware[];
-      id?: gm.Middleware[];
-      type?: gm.Middleware[];
-      name?: gm.Middleware[];
-      createdAt?: gm.Middleware[];
-      participants?: gm.Middleware[];
-      lastMessage?: gm.Middleware[];
-      creator?: gm.Middleware[];
-    };
-    CreateConversationResponse?: {
-      '*'?: gm.Middleware[];
-      code?: gm.Middleware[];
-      success?: gm.Middleware[];
-      message?: gm.Middleware[];
-      conversation?: gm.Middleware[];
-    };
-    Query?: {
-      '*'?: gm.Middleware[];
-      conversations?: gm.Middleware[];
-    };
-    Mutation?: {
-      '*'?: gm.Middleware[];
-      createConversation?: gm.Middleware[];
-    };
-    Subscription?: {
-      '*'?: gm.Middleware[];
-      conversationsUpdated?: gm.Middleware[];
-    };
   };
 }

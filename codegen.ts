@@ -8,7 +8,7 @@ const config: CodegenConfig = {
       presetConfig: {
         baseTypesPath: '../generated-types/graphql.ts',
         filename: 'generated-types/module-types.ts',
-        useGraphQLModules: true,
+        useGraphQLModules: false,
       },
       plugins: ['typescript', 'typescript-resolvers'],
       config: {

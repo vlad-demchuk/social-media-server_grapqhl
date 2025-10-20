@@ -1,5 +1,4 @@
 import * as Types from "../../../generated-types/graphql";
-import * as gm from "graphql-modules";
 export namespace PostModule {
   interface DefinedFields {
     Post: 'id' | 'content' | 'createdAt' | 'owner' | 'likesCount' | 'commentsCount' | 'isLiked';
@@ -34,45 +33,5 @@ export namespace PostModule {
     DeletePostResponse?: DeletePostResponseResolvers;
     Query?: QueryResolvers;
     Mutation?: MutationResolvers;
-  };
-  
-  export interface MiddlewareMap {
-    '*'?: {
-      '*'?: gm.Middleware[];
-    };
-    Post?: {
-      '*'?: gm.Middleware[];
-      id?: gm.Middleware[];
-      content?: gm.Middleware[];
-      createdAt?: gm.Middleware[];
-      owner?: gm.Middleware[];
-      likesCount?: gm.Middleware[];
-      commentsCount?: gm.Middleware[];
-      isLiked?: gm.Middleware[];
-    };
-    CreatePostResponse?: {
-      '*'?: gm.Middleware[];
-      code?: gm.Middleware[];
-      success?: gm.Middleware[];
-      message?: gm.Middleware[];
-      post?: gm.Middleware[];
-    };
-    DeletePostResponse?: {
-      '*'?: gm.Middleware[];
-      code?: gm.Middleware[];
-      success?: gm.Middleware[];
-      message?: gm.Middleware[];
-    };
-    Query?: {
-      '*'?: gm.Middleware[];
-      posts?: gm.Middleware[];
-      userPosts?: gm.Middleware[];
-      post?: gm.Middleware[];
-    };
-    Mutation?: {
-      '*'?: gm.Middleware[];
-      createPost?: gm.Middleware[];
-      deletePost?: gm.Middleware[];
-    };
   };
 }

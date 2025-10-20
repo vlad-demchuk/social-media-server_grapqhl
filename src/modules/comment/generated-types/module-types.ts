@@ -1,5 +1,4 @@
 import * as Types from "../../../generated-types/graphql";
-import * as gm from "graphql-modules";
 export namespace CommentModule {
   interface DefinedFields {
     Comment: 'id' | 'content' | 'createdAt' | 'author';
@@ -34,41 +33,5 @@ export namespace CommentModule {
     DeleteCommentResponse?: DeleteCommentResponseResolvers;
     Query?: QueryResolvers;
     Mutation?: MutationResolvers;
-  };
-  
-  export interface MiddlewareMap {
-    '*'?: {
-      '*'?: gm.Middleware[];
-    };
-    Comment?: {
-      '*'?: gm.Middleware[];
-      id?: gm.Middleware[];
-      content?: gm.Middleware[];
-      createdAt?: gm.Middleware[];
-      author?: gm.Middleware[];
-    };
-    CreateCommentResponse?: {
-      '*'?: gm.Middleware[];
-      code?: gm.Middleware[];
-      success?: gm.Middleware[];
-      message?: gm.Middleware[];
-      comment?: gm.Middleware[];
-    };
-    DeleteCommentResponse?: {
-      '*'?: gm.Middleware[];
-      code?: gm.Middleware[];
-      success?: gm.Middleware[];
-      message?: gm.Middleware[];
-      commentId?: gm.Middleware[];
-    };
-    Query?: {
-      '*'?: gm.Middleware[];
-      comments?: gm.Middleware[];
-    };
-    Mutation?: {
-      '*'?: gm.Middleware[];
-      createComment?: gm.Middleware[];
-      deleteComment?: gm.Middleware[];
-    };
   };
 }

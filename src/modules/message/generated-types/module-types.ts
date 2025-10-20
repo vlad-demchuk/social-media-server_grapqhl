@@ -1,5 +1,4 @@
 import * as Types from "../../../generated-types/graphql";
-import * as gm from "graphql-modules";
 export namespace MessageModule {
   interface DefinedFields {
     Message: 'id' | 'content' | 'createdAt' | 'updatedAt' | 'sender' | 'conversationId';
@@ -29,39 +28,5 @@ export namespace MessageModule {
     Query?: QueryResolvers;
     Mutation?: MutationResolvers;
     Subscription?: SubscriptionResolvers;
-  };
-  
-  export interface MiddlewareMap {
-    '*'?: {
-      '*'?: gm.Middleware[];
-    };
-    Message?: {
-      '*'?: gm.Middleware[];
-      id?: gm.Middleware[];
-      content?: gm.Middleware[];
-      createdAt?: gm.Middleware[];
-      updatedAt?: gm.Middleware[];
-      sender?: gm.Middleware[];
-      conversationId?: gm.Middleware[];
-    };
-    CreateMessageResponse?: {
-      '*'?: gm.Middleware[];
-      code?: gm.Middleware[];
-      success?: gm.Middleware[];
-      message?: gm.Middleware[];
-      createdMessage?: gm.Middleware[];
-    };
-    Query?: {
-      '*'?: gm.Middleware[];
-      conversationMessages?: gm.Middleware[];
-    };
-    Mutation?: {
-      '*'?: gm.Middleware[];
-      createMessage?: gm.Middleware[];
-    };
-    Subscription?: {
-      '*'?: gm.Middleware[];
-      messageAdded?: gm.Middleware[];
-    };
   };
 }
