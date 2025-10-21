@@ -1,16 +1,9 @@
-import { pool } from '../../db';
 import { getById as getPostById } from '../post/service';
 import { Post } from '../../generated-types/graphql';
+import * as likeRepository from './repository';
 
 export const likePost = async (userId: number, postId: number): Promise<Post> => {
-  await pool.query(
-    `
-    INSERT INTO likes (user_id, post_id)
-    VALUES ($1, $2)
-    ON CONFLICT (user_id, post_id) DO NOTHING
-    `,
-    [userId, postId],
-  );
+  await likeRepository.insert(userId, postId);
 
   const post = await getPostById(userId, postId);
 
@@ -18,10 +11,7 @@ export const likePost = async (userId: number, postId: number): Promise<Post> =>
 };
 
 export const unlikePost = async (userId: number, postId: number): Promise<Post> => {
-  await pool.query(
-    `DELETE FROM likes WHERE user_id = $1 AND post_id = $2`,
-    [userId, postId],
-  );
+  await likeRepository.deleteByUserAndPost(userId, postId);
 
   const post = await getPostById(userId, postId);
 
