@@ -1,6 +1,7 @@
 import { pool } from '../../db';
+import { Notification } from '../../generated-types/graphql';
 
-export const findAll = async (recipientId: number) => {
+export const findAll = async (recipientId: number): Promise<Notification[]> => {
   const { rows } = await pool.query(
     `SELECT n.id           as id,
             n.recipient_id as "recipientId",
@@ -43,7 +44,7 @@ export const insert = async ({
   entityId: number;
   entityType: 'POST' | 'COMMENT' | 'MESSAGE';
   preview?: string;
-}) => {
+}): Promise<Notification> => {
   const { rows } = await pool.query(
     `
         WITH upsert AS (

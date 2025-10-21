@@ -1,6 +1,7 @@
 import { pool } from '../../db';
+import { User } from '../../generated-types/graphql';
 
-export const findAll = async () => {
+export const findAll = async (): Promise<User[]> => {
   const result = await pool.query(`
       SELECT id, username, email, image, created_at AS "createdAt", email_verified AS "emailVerified", updated_at AS "updatedAt"
       FROM users
@@ -10,7 +11,7 @@ export const findAll = async () => {
   return result.rows;
 };
 
-export const findById = async (userId: number) => {
+export const findById = async (userId: number): Promise<User | undefined> => {
   const result = await pool.query(`
       SELECT id, username, email, image, created_at AS "createdAt", email_verified AS "emailVerified", updated_at AS "updatedAt"
       FROM users
@@ -21,7 +22,7 @@ export const findById = async (userId: number) => {
   return result.rows[0];
 };
 
-export const findByQuery = async (query: string) => {
+export const findByQuery = async (query: string): Promise<User[]> => {
   const result = await pool.query(`
       SELECT id, username, email, image, created_at AS "createdAt", email_verified AS "emailVerified", updated_at AS "updatedAt"
       FROM users

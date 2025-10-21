@@ -1,7 +1,7 @@
 import { pool } from '../../db';
-import { CreateCommentInput } from '../../generated-types/graphql';
+import { Comment, CreateCommentInput } from '../../generated-types/graphql';
 
-export const findByPostId = async (postId: number) => {
+export const findByPostId = async (postId: number): Promise<Comment[]> => {
   const result = await pool.query(
     `
       SELECT
@@ -32,7 +32,7 @@ export const insert = async ({
   content,
   userId,
   postId,
-}: CreateCommentInput & { userId: number }) => {
+}: CreateCommentInput & { userId: number }): Promise<Comment> => {
   const result = await pool.query(
     `
       WITH inserted AS (
@@ -62,7 +62,7 @@ export const insert = async ({
   return result.rows[0];
 };
 
-export const deleteById = async (id: number) => {
+export const deleteById = async (id: number): Promise<boolean> => {
   const result = await pool.query(
     `
     DELETE FROM comments

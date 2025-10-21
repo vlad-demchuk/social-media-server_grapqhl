@@ -1,7 +1,17 @@
 import { pool } from '../../db';
-import { CreatePostInput } from '../../generated-types/graphql';
+import { CreatePostInput, Post, User } from '../../generated-types/graphql';
 
-export const findAll = async (currentUserId: number) => {
+type PostRow = {
+  id: number;
+  content: string;
+  createdAt: string;
+  owner: User;
+  likesCount: number;
+  commentsCount: number;
+  isLiked: boolean;
+};
+
+export const findAll = async (currentUserId: number): Promise<Post[]> => {
   const result = await pool.query(
     `
         SELECT p.id,
@@ -33,7 +43,7 @@ export const findAll = async (currentUserId: number) => {
   return result.rows;
 };
 
-export const findByUserName = async (currentUserId: number, userName: string) => {
+export const findByUserName = async (currentUserId: number, userName: string): Promise<Post[]> => {
   const result = await pool.query(
     `
         SELECT p.id,
@@ -66,7 +76,7 @@ export const findByUserName = async (currentUserId: number, userName: string) =>
   return result.rows;
 };
 
-export const findById = async (userId: number, postId: number) => {
+export const findById = async (userId: number, postId: number): Promise<Post | undefined> => {
   const result = await pool.query(
     `
         SELECT p.id,
@@ -103,7 +113,7 @@ export const findById = async (userId: number, postId: number) => {
 export const insert = async ({
   content,
   userId,
-}: CreatePostInput & { userId: number }) => {
+}: CreatePostInput & { userId: number }): Promise<PostRow> => {
   const result = await pool.query(
     `
         INSERT INTO posts (user_id, content)
@@ -129,7 +139,7 @@ export const insert = async ({
   return result.rows[0];
 };
 
-export const deleteById = async (id: number) => {
+export const deleteById = async (id: number): Promise<boolean> => {
   const result = await pool.query(
     `
         DELETE

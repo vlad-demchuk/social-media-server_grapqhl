@@ -1,6 +1,7 @@
 import { pool } from '../../db';
+import { Conversation } from '../../generated-types/graphql';
 
-export const findAll = async (currentUserId: number) => {
+export const findAll = async (currentUserId: number): Promise<Conversation[]> => {
   const result = await pool.query(`
    WITH chat_list AS (
       SELECT
@@ -78,7 +79,7 @@ export const findAll = async (currentUserId: number) => {
   return result.rows;
 };
 
-export const findDirectByUserIds = async (currentUserId: number, secondUserId: number) => {
+export const findDirectByUserIds = async (currentUserId: number, secondUserId: number): Promise<{ id: number } | null> => {
   const existing = await pool.query(
     `
         SELECT c.id
@@ -95,7 +96,7 @@ export const findDirectByUserIds = async (currentUserId: number, secondUserId: n
   return existing.rows[0] || null;
 };
 
-export const findById = async (conversationId: number) => {
+export const findById = async (conversationId: number): Promise<Conversation | null> => {
   const { rows } = await pool.query(`
       SELECT
         c.id,
@@ -157,7 +158,7 @@ export const findById = async (conversationId: number) => {
   return rows[0] || null;
 };
 
-export const insertDirect = async (currentUserId: number, secondUserId: number) => {
+export const insertDirect = async (currentUserId: number, secondUserId: number): Promise<Conversation> => {
   const conversationRes = await pool.query(
     `INSERT INTO conversations (type, creator_id)
      VALUES ('direct', $1) RETURNING id, name, type, created_at, creator_id`,
@@ -210,7 +211,7 @@ export const insertDirect = async (currentUserId: number, secondUserId: number) 
   return rows[0];
 };
 
-export const checkUserInChat = async (userId: number, conversationId: number) => {
+export const checkUserInChat = async (userId: number, conversationId: number): Promise<boolean> => {
   const result = await pool.query(`
       SELECT 1
       FROM conversation_participants

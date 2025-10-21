@@ -1,6 +1,7 @@
 import { pool } from '../../db';
+import { Message } from '../../generated-types/graphql';
 
-export const findByConversationId = async (conversationId: number) => {
+export const findByConversationId = async (conversationId: number): Promise<Message[]> => {
   const result = await pool.query(
     `
         SELECT m.id,
@@ -37,7 +38,7 @@ export const insert = async ({
   conversationId: number;
   senderId: number;
   content: string;
-}) => {
+}): Promise<Message> => {
   const result = await pool.query(
     `
         WITH inserted AS (
