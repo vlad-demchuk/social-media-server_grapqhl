@@ -1,8 +1,9 @@
 import * as commentService from './service';
 import * as postService from '../post/service';
 import { CommentModule } from './generated-types/module-types';
-import { NotificationPayload } from '../../generated-types/graphql';
 import { requireAuth } from '../../utils/authHelpers';
+import { createNotificationPayload, shouldSendNotification, publishNotification } from '../../utils/notificationHelpers';
+import { createSuccessResponse, createErrorResponse } from '../../utils/errorHelpers';
 
 export const resolvers: CommentModule.Resolvers = {
   Query: {
@@ -23,42 +24,24 @@ export const resolvers: CommentModule.Resolvers = {
           postId: args.input.postId,
         });
 
-        const { id, image, name, emailVerified, updatedAt, createdAt, email } = user;
-
         const commentedPost = await postService.getById(user.id, args.input.postId);
 
-        const notificationPayload: NotificationPayload = {
-          actor: {
-            id,
-            username: name,
-            email,
-            emailVerified,
-            createdAt,
-            updatedAt,
-            image,
-          },
-          entityId: comment.id,
-          entityType: 'COMMENT',
-          preview: 'Your post was commented',
-          type: 'COMMENT',
-          recipientId: commentedPost.owner.id,
-        };
+        if (shouldSendNotification(user.id, commentedPost.owner.id)) {
+          const notificationPayload = createNotificationPayload(
+            user,
+            comment.id,
+            'COMMENT',
+            'Your post was commented',
+            'COMMENT',
+            commentedPost.owner.id,
+          );
 
-        await context.pubsub.publish('NOTIFICATION_ADDED', { notificationAdded: notificationPayload });
+          await publishNotification(context, notificationPayload);
+        }
 
-        return {
-          code: 200,
-          success: true,
-          message: 'Comment successfully created!',
-          comment,
-        };
+        return createSuccessResponse('Comment successfully created!', { comment });
       } catch (error) {
-        return {
-          code: 500,
-          success: false,
-          message: `Something went wrong:`,
-          error,
-        };
+        return createErrorResponse(error, 'Failed to create comment');
       }
     },
     deleteComment: async (_, args, context) => {
@@ -67,19 +50,9 @@ export const resolvers: CommentModule.Resolvers = {
       try {
         await commentService.remove(args.commentId);
 
-        return {
-          code: 200,
-          success: true,
-          message: 'Comment successfully deleted!',
-          commentId: args.commentId,
-        };
+        return createSuccessResponse('Comment successfully deleted!', { commentId: args.commentId });
       } catch (error) {
-        return {
-          code: 500,
-          success: false,
-          message: `Something went wrong: `,
-          error,
-        };
+        return createErrorResponse(error, 'Failed to delete comment');
       }
     },
   },

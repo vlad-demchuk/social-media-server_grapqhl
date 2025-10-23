@@ -1,6 +1,7 @@
 import { PostModule } from './generated-types/module-types';
 import * as postService from './service';
 import { requireAuth } from '../../utils/authHelpers';
+import { createSuccessResponse, createErrorResponse } from '../../utils/errorHelpers';
 
 export const resolvers: PostModule.Resolvers = {
   Query: {
@@ -36,19 +37,9 @@ export const resolvers: PostModule.Resolvers = {
           userId: Number(user.id),
         });
 
-        return {
-          code: 200,
-          success: true,
-          message: 'Post successfully created!',
-          post,
-        };
+        return createSuccessResponse('Post successfully created!', { post });
       } catch (error) {
-        return {
-          code: 500,
-          success: false,
-          message: `Something went wrong:`,
-          error,
-        };
+        return createErrorResponse(error, 'Failed to create post');
       }
     },
     deletePost: async (_, args, context) => {
@@ -57,18 +48,9 @@ export const resolvers: PostModule.Resolvers = {
       try {
         await postService.remove(args.postId);
 
-        return {
-          code: 200,
-          success: true,
-          message: 'Post successfully deleted!',
-        };
+        return createSuccessResponse('Post successfully deleted!');
       } catch (error) {
-        return {
-          code: 500,
-          success: false,
-          message: `Something went wrong: `,
-          error,
-        };
+        return createErrorResponse(error, 'Failed to delete post');
       }
     },
   },

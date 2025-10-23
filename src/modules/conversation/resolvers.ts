@@ -4,6 +4,7 @@ import { withFilter } from 'graphql-subscriptions';
 import { Conversation } from '../../generated-types/graphql';
 import { Context } from '../../context';
 import { requireAuth } from '../../utils/authHelpers';
+import { createSuccessResponse, createErrorResponse } from '../../utils/errorHelpers';
 
 export const resolvers: ConversationModule.Resolvers = {
   Query: {
@@ -30,19 +31,12 @@ export const resolvers: ConversationModule.Resolvers = {
           });
         }
 
-        return {
-          code: 200,
-          success: true,
-          message: isConversationExisting ? 'Conversation is already existing!' : 'Conversation successfully created!',
-          conversation,
-        };
+        return createSuccessResponse(
+          isConversationExisting ? 'Conversation already exists!' : 'Conversation successfully created!',
+          { conversation },
+        );
       } catch (error) {
-        return {
-          code: 500,
-          success: false,
-          message: `Something went wrong: `,
-          error,
-        };
+        return createErrorResponse(error, 'Failed to create conversation');
       }
     },
   },

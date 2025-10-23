@@ -5,6 +5,7 @@ import { Message } from '../../generated-types/graphql';
 import { withFilter } from 'graphql-subscriptions';
 import { Context } from '../../context';
 import { requireAuth } from '../../utils/authHelpers';
+import { createSuccessResponse, createErrorResponse } from '../../utils/errorHelpers';
 
 export const resolvers: MessageModule.Resolvers = {
   Query: {
@@ -46,19 +47,9 @@ export const resolvers: MessageModule.Resolvers = {
           conversationsUpdated: conversation,
         });
 
-        return {
-          code: 200,
-          success: true,
-          message: 'Message successfully created!',
-          createdMessage: message,
-        };
+        return createSuccessResponse('Message successfully created!', { createdMessage: message });
       } catch (error) {
-        return {
-          code: 500,
-          success: false,
-          message: `Something went wrong: `,
-          error,
-        };
+        return createErrorResponse(error, 'Failed to create message');
       }
     },
   },
