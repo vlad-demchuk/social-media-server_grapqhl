@@ -1,8 +1,8 @@
 import * as commentService from './service';
-import { UnauthorizedException } from '../../exeptions';
 import * as postService from '../post/service';
 import { CommentModule } from './generated-types/module-types';
 import { NotificationPayload } from '../../generated-types/graphql';
+import { requireAuth } from '../../utils/authHelpers';
 
 export const resolvers: CommentModule.Resolvers = {
   Query: {
@@ -14,20 +14,18 @@ export const resolvers: CommentModule.Resolvers = {
   },
   Mutation: {
     createComment: async (_, args, context) => {
-      if (!context.user) {
-        throw new UnauthorizedException();
-      }
+      const user = requireAuth(context);
 
       try {
         const comment = await commentService.create({
           content: args.input.content,
-          userId: context.user.id,
+          userId: user.id,
           postId: args.input.postId,
         });
 
-        const { id, image, name, emailVerified, updatedAt, createdAt, email } = context.user;
+        const { id, image, name, emailVerified, updatedAt, createdAt, email } = user;
 
-        const commentedPost = await postService.getById(context.user.id, args.input.postId);
+        const commentedPost = await postService.getById(user.id, args.input.postId);
 
         const notificationPayload: NotificationPayload = {
           actor: {
@@ -64,9 +62,7 @@ export const resolvers: CommentModule.Resolvers = {
       }
     },
     deleteComment: async (_, args, context) => {
-      if (!context.user) {
-        throw new UnauthorizedException();
-      }
+      requireAuth(context);
 
       try {
         await commentService.remove(args.commentId);

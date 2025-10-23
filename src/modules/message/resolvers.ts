@@ -1,17 +1,15 @@
 import { MessageModule } from './generated-types/module-types';
-import { UnauthorizedException } from '../../exeptions';
 import * as messageService from './service';
 import * as conversationService from '../conversation/service';
 import { Message } from '../../generated-types/graphql';
 import { withFilter } from 'graphql-subscriptions';
 import { Context } from '../../context';
+import { requireAuth } from '../../utils/authHelpers';
 
 export const resolvers: MessageModule.Resolvers = {
   Query: {
     conversationMessages: async (_, args, context) => {
-      if (!context.user) {
-        throw new UnauthorizedException();
-      }
+      requireAuth(context);
 
       const messages = await messageService.getConversationMessages(args.conversationId);
 
@@ -20,14 +18,12 @@ export const resolvers: MessageModule.Resolvers = {
   },
   Mutation: {
     createMessage: async (_, args, context) => {
-      if (!context.user) {
-        throw new UnauthorizedException();
-      }
+      const user = requireAuth(context);
 
       try {
         const message = await messageService.create({
           conversationId: args.conversationId,
-          senderId: context.user.id,
+          senderId: user.id,
           content: args.content,
         });
 

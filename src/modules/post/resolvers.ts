@@ -1,43 +1,39 @@
 import { PostModule } from './generated-types/module-types';
-import { UnauthorizedException } from '../../exeptions';
 import * as postService from './service';
+import { requireAuth } from '../../utils/authHelpers';
 
 export const resolvers: PostModule.Resolvers = {
   Query: {
     posts: async (_, __, context) => {
-      if (!context.user) {
-        throw new UnauthorizedException();
-      }
+      const user = requireAuth(context);
 
-      const posts = await postService.getAll(context.user.id);
+      const posts = await postService.getAll(user.id);
 
       return posts;
     },
     userPosts: async (_, args, context) => {
-      if (!context.user) {
-        throw new UnauthorizedException();
-      }
+      const user = requireAuth(context);
 
-      const posts = await postService.getPostsByUserName(context.user.id, args.userName);
+      const posts = await postService.getPostsByUserName(user.id, args.userName);
 
       return posts;
     },
     post: async (_, args, context) => {
-      if (!context.user) {
-        throw new UnauthorizedException();
-      }
+      const user = requireAuth(context);
 
-      const post = await postService.getById(context.user.id, args.postId);
+      const post = await postService.getById(user.id, args.postId);
 
       return post;
     },
   },
   Mutation: {
     createPost: async (_, args, context) => {
+      const user = requireAuth(context);
+
       try {
         const post = await postService.create({
           content: args.input.content,
-          userId: Number(context.user.id),
+          userId: Number(user.id),
         });
 
         return {
@@ -55,7 +51,9 @@ export const resolvers: PostModule.Resolvers = {
         };
       }
     },
-    deletePost: async (_, args) => {
+    deletePost: async (_, args, context) => {
+      requireAuth(context);
+
       try {
         await postService.remove(args.postId);
 

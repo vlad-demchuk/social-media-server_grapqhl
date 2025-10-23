@@ -1,19 +1,17 @@
-import { UnauthorizedException } from '../../exeptions';
 import * as likeService from './service';
 import { NotificationPayload } from '../../generated-types/graphql';
 import { LikeModule } from './generated-types/module-types';
+import { requireAuth } from '../../utils/authHelpers';
 
 export const resolvers: LikeModule.Resolvers = {
   Mutation: {
     likePost: async (_, args, context) => {
-      if (!context.user) {
-        throw new UnauthorizedException();
-      }
+      const user = requireAuth(context);
 
       try {
-        const post = await likeService.likePost(context.user.id, args.postId);
+        const post = await likeService.likePost(user.id, args.postId);
 
-        const { id, image, name, emailVerified, updatedAt, createdAt, email } = context.user;
+        const { id, image, name, emailVerified, updatedAt, createdAt, email } = user;
 
         const notificationPayload: NotificationPayload = {
           actor: {
@@ -50,12 +48,10 @@ export const resolvers: LikeModule.Resolvers = {
       }
     },
     unlikePost: async (_, args, context) => {
-      if (!context.user) {
-        throw new UnauthorizedException();
-      }
+      const user = requireAuth(context);
 
       try {
-        const post = await likeService.unlikePost(context.user.id, args.postId);
+        const post = await likeService.unlikePost(user.id, args.postId);
 
         return {
           code: 200,

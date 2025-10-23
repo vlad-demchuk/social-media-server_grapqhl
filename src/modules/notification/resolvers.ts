@@ -1,18 +1,16 @@
 import { NotificationModule } from './generated-types/module-types';
-import { UnauthorizedException } from '../../exeptions';
 import * as notificationService from './service';
 import { withFilter } from 'graphql-subscriptions';
 import { NotificationPayload } from '../../generated-types/graphql';
 import { Context } from '../../context';
+import { requireAuth } from '../../utils/authHelpers';
 
 export const resolvers: NotificationModule.Resolvers = {
   Query: {
     notifications: async (_, __, context) => {
-      if (!context.user) {
-        throw new UnauthorizedException();
-      }
+      const user = requireAuth(context);
 
-      const notifications = await notificationService.getAll(context.user.id);
+      const notifications = await notificationService.getAll(user.id);
 
       return notifications;
     },

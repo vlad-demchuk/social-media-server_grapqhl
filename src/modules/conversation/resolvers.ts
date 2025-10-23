@@ -1,34 +1,30 @@
-import { UnauthorizedException } from '../../exeptions';
 import * as conversationService from './service';
 import { ConversationModule } from './generated-types/module-types';
 import { withFilter } from 'graphql-subscriptions';
 import { Conversation } from '../../generated-types/graphql';
 import { Context } from '../../context';
+import { requireAuth } from '../../utils/authHelpers';
 
 export const resolvers: ConversationModule.Resolvers = {
   Query: {
     conversations: async (_, __, context) => {
-      if (!context.user) {
-        throw new UnauthorizedException();
-      }
+      const user = requireAuth(context);
 
-      const conversations = await conversationService.getAll(context.user.id);
+      const conversations = await conversationService.getAll(user.id);
 
       return conversations;
     },
   },
   Mutation: {
     createConversation: async (_, args, context) => {
-      if (!context.user) {
-        throw new UnauthorizedException();
-      }
+      const user = requireAuth(context);
 
       try {
-        let conversation = await conversationService.getDirectByUserIds(context.user.id, args.userId);
+        let conversation = await conversationService.getDirectByUserIds(user.id, args.userId);
         let isConversationExisting = !!conversation;
 
         if (!isConversationExisting) {
-          conversation = await conversationService.createDirect(context.user.id, args.userId);
+          conversation = await conversationService.createDirect(user.id, args.userId);
           context.pubsub.publish('CONVERSATIONS_UPDATED', {
             conversationsUpdated: conversation,
           });
