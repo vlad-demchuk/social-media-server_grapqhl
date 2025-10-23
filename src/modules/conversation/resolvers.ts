@@ -1,4 +1,4 @@
-import { GraphQLError } from 'graphql/error';
+import { UnauthorizedException } from '../../exeptions';
 import * as conversationService from './service';
 import { ConversationModule } from './generated-types/module-types';
 import { withFilter } from 'graphql-subscriptions';
@@ -9,9 +9,7 @@ export const resolvers: ConversationModule.Resolvers = {
   Query: {
     conversations: async (_, __, context) => {
       if (!context.user) {
-        throw new GraphQLError('Authentication required', {
-          extensions: { code: 'UNAUTHENTICATED' },
-        });
+        throw new UnauthorizedException();
       }
 
       const conversations = await conversationService.getAll(context.user.id);
@@ -22,9 +20,7 @@ export const resolvers: ConversationModule.Resolvers = {
   Mutation: {
     createConversation: async (_, args, context) => {
       if (!context.user) {
-        throw new GraphQLError('Authentication required', {
-          extensions: { code: 'UNAUTHENTICATED' },
-        });
+        throw new UnauthorizedException();
       }
 
       try {

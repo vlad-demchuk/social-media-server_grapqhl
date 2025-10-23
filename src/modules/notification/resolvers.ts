@@ -1,5 +1,5 @@
 import { NotificationModule } from './generated-types/module-types';
-import { GraphQLError } from 'graphql/error';
+import { UnauthorizedException } from '../../exeptions';
 import * as notificationService from './service';
 import { withFilter } from 'graphql-subscriptions';
 import { NotificationPayload } from '../../generated-types/graphql';
@@ -9,9 +9,7 @@ export const resolvers: NotificationModule.Resolvers = {
   Query: {
     notifications: async (_, __, context) => {
       if (!context.user) {
-        throw new GraphQLError('Authentication required', {
-          extensions: { code: 'UNAUTHENTICATED' },
-        });
+        throw new UnauthorizedException();
       }
 
       const notifications = await notificationService.getAll(context.user.id);

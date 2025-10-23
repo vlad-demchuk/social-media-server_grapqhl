@@ -1,14 +1,12 @@
 import { UserModule } from './generated-types/module-types';
-import { GraphQLError } from 'graphql/error';
+import { UnauthorizedException } from '../../exeptions';
 import * as userService from './service';
 
 export const resolvers: UserModule.Resolvers = {
   Query: {
     users: async (_, __, context) => {
       if (!context.user) {
-        throw new GraphQLError('Authentication required', {
-          extensions: { code: 'UNAUTHENTICATED' },
-        });
+        throw new UnauthorizedException();
       }
 
       const users = await userService.getAll();
@@ -17,9 +15,7 @@ export const resolvers: UserModule.Resolvers = {
     },
     user: async (_, args, context) => {
       if (!context.user) {
-        throw new GraphQLError('Authentication required', {
-          extensions: { code: 'UNAUTHENTICATED' },
-        });
+        throw new UnauthorizedException();
       }
 
       const user = await userService.getOne(args.userId);
@@ -28,9 +24,7 @@ export const resolvers: UserModule.Resolvers = {
     },
     searchUser: async (_, args, context) => {
       if (!context.user) {
-        throw new GraphQLError('Authentication required', {
-          extensions: { code: 'UNAUTHENTICATED' },
-        });
+        throw new UnauthorizedException();
       }
 
       const users = await userService.search(args.query);

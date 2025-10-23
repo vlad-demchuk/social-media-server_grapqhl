@@ -1,14 +1,12 @@
 import { PostModule } from './generated-types/module-types';
-import { GraphQLError } from 'graphql/error';
+import { UnauthorizedException } from '../../exeptions';
 import * as postService from './service';
 
 export const resolvers: PostModule.Resolvers = {
   Query: {
     posts: async (_, __, context) => {
       if (!context.user) {
-        throw new GraphQLError('Authentication required', {
-          extensions: { code: 'UNAUTHENTICATED' },
-        });
+        throw new UnauthorizedException();
       }
 
       const posts = await postService.getAll(context.user.id);
@@ -17,9 +15,7 @@ export const resolvers: PostModule.Resolvers = {
     },
     userPosts: async (_, args, context) => {
       if (!context.user) {
-        throw new GraphQLError('Authentication required', {
-          extensions: { code: 'UNAUTHENTICATED' },
-        });
+        throw new UnauthorizedException();
       }
 
       const posts = await postService.getPostsByUserName(context.user.id, args.userName);
@@ -28,9 +24,7 @@ export const resolvers: PostModule.Resolvers = {
     },
     post: async (_, args, context) => {
       if (!context.user) {
-        throw new GraphQLError('Authentication required', {
-          extensions: { code: 'UNAUTHENTICATED' },
-        });
+        throw new UnauthorizedException();
       }
 
       const post = await postService.getById(context.user.id, args.postId);

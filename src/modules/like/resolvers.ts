@@ -1,4 +1,4 @@
-import { GraphQLError } from 'graphql/error';
+import { UnauthorizedException } from '../../exeptions';
 import * as likeService from './service';
 import { NotificationPayload } from '../../generated-types/graphql';
 import { LikeModule } from './generated-types/module-types';
@@ -7,9 +7,7 @@ export const resolvers: LikeModule.Resolvers = {
   Mutation: {
     likePost: async (_, args, context) => {
       if (!context.user) {
-        throw new GraphQLError('Authentication required', {
-          extensions: { code: 'UNAUTHENTICATED' },
-        });
+        throw new UnauthorizedException();
       }
 
       try {
@@ -53,9 +51,7 @@ export const resolvers: LikeModule.Resolvers = {
     },
     unlikePost: async (_, args, context) => {
       if (!context.user) {
-        throw new GraphQLError('Authentication required', {
-          extensions: { code: 'UNAUTHENTICATED' },
-        });
+        throw new UnauthorizedException();
       }
 
       try {

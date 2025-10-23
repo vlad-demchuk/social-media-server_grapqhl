@@ -1,5 +1,5 @@
 import * as commentService from './service';
-import { GraphQLError } from 'graphql/error';
+import { UnauthorizedException } from '../../exeptions';
 import * as postService from '../post/service';
 import { CommentModule } from './generated-types/module-types';
 import { NotificationPayload } from '../../generated-types/graphql';
@@ -15,9 +15,7 @@ export const resolvers: CommentModule.Resolvers = {
   Mutation: {
     createComment: async (_, args, context) => {
       if (!context.user) {
-        throw new GraphQLError('Authentication required', {
-          extensions: { code: 'UNAUTHENTICATED' },
-        });
+        throw new UnauthorizedException();
       }
 
       try {
@@ -67,9 +65,7 @@ export const resolvers: CommentModule.Resolvers = {
     },
     deleteComment: async (_, args, context) => {
       if (!context.user) {
-        throw new GraphQLError('Authentication required', {
-          extensions: { code: 'UNAUTHENTICATED' },
-        });
+        throw new UnauthorizedException();
       }
 
       try {
