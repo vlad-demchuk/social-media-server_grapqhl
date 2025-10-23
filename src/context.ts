@@ -1,24 +1,11 @@
-import { auth, Session, User } from './lib/auth';
+import { auth } from './lib/auth';
 import { PubSub } from 'graphql-subscriptions';
 import { fromNodeHeaders } from 'better-auth/node';
 import { normalizeUser } from './utils/authHelpers';
 import type { IncomingMessage } from 'http';
+import type { Context, ConnectionParams, Session, User } from './types';
 
-export type Context = {
-  user: User | null,
-  session: Session | null,
-  auth: typeof auth,
-  pubsub: PubSub
-}
-
-export interface ConnectionParams {
-  session?: {
-    data: {
-      session: Session;
-      user: User;
-    };
-  };
-}
+export type { Context, ConnectionParams };
 
 export const createHttpContext = async (req: IncomingMessage, pubsub: PubSub): Promise<Context> => {
   const session = await auth.api.getSession({
