@@ -1,5 +1,3 @@
-import { GraphQLError } from 'graphql/error';
-
 export interface MutationResponse {
   code: number;
   success: boolean;

@@ -34,7 +34,7 @@ export const resolvers: PostModule.Resolvers = {
       try {
         const post = await postService.create({
           content: args.input.content,
-          userId: Number(user.id),
+          userId: user.id,
         });
 
         return createSuccessResponse('Post successfully created!', { post });

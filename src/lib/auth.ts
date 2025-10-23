@@ -11,9 +11,9 @@ export const auth = betterAuth({
   emailAndPassword: {
     enabled: true,
   },
-  trustedOrigins: ['http://localhost:3000', process.env.FRONTEND_URL, 'https://studio.apollographql.com'],
+  trustedOrigins: ['http://localhost:3000', process.env.FRONTEND_URL || 'http://localhost:3000', 'https://studio.apollographql.com'],
   advanced: {
-    allowedOrigins: ['http://localhost:3000', process.env.FRONTEND_URL, 'https://studio.apollographql.com'],
+    allowedOrigins: ['http://localhost:3000', process.env.FRONTEND_URL || 'http://localhost:3000', 'https://studio.apollographql.com'],
     database: {
       useNumberId: true,
     },

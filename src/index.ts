@@ -36,7 +36,7 @@ const HOST = process.env.PORT ? '0.0.0.0' : '127.0.0.1';
   app.use(
     cors({
       origin: [
-        process.env.FRONTEND_URL,
+        process.env.FRONTEND_URL || 'http://localhost:3000',
         'http://localhost:3000',
         'https://studio.apollographql.com',
       ],
