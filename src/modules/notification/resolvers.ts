@@ -2,7 +2,6 @@ import { NotificationModule } from './generated-types/module-types';
 import * as notificationService from './service';
 import { withFilter } from 'graphql-subscriptions';
 import { NotificationPayload } from '../../generated-types/graphql';
-import { Context } from '../../context';
 import { requireAuth } from '../../utils/authHelpers';
 
 export const resolvers: NotificationModule.Resolvers = {
@@ -17,17 +16,21 @@ export const resolvers: NotificationModule.Resolvers = {
   },
   Subscription: {
     notificationAdded: {
-      subscribe: withFilter<{ notificationAdded: NotificationPayload }, {}, Context>(
-        (_parent, _args, context) => context.pubsub.asyncIterableIterator(
-          'NOTIFICATION_ADDED'),
+      subscribe: withFilter(
+        (_parent, _args, context) => {
+          if (!context) {
+            throw new Error('Context is required for subscription');
+          }
+          return context.pubsub.asyncIterableIterator('NOTIFICATION_ADDED');
+        },
         async (payload, _, context) => {
           if (!payload) {
             return false;
           }
 
-          const notificationAdded = payload.notificationAdded;
+          const notificationAdded = (payload as { notificationAdded: NotificationPayload }).notificationAdded;
 
-          if (!context.user.id) {
+          if (!context?.user?.id) {
             return false;
           }
 

@@ -3,7 +3,6 @@ import * as messageService from './service';
 import * as conversationService from '../conversation/service';
 import { Message } from '../../generated-types/graphql';
 import { withFilter } from 'graphql-subscriptions';
-import { Context } from '../../context';
 import { requireAuth } from '../../utils/authHelpers';
 import { createSuccessResponse, createErrorResponse } from '../../utils/errorHelpers';
 
@@ -55,17 +54,21 @@ export const resolvers: MessageModule.Resolvers = {
   },
   Subscription: {
     messageAdded: {
-      subscribe: withFilter<{ messageAdded: Message }, {}, Context>(
-        (_parent, _args, context) => context.pubsub.asyncIterableIterator(
-          'MESSAGE_ADDED'),
+      subscribe: withFilter(
+        (_parent, _args, context) => {
+          if (!context) {
+            throw new Error('Context is required for subscription');
+          }
+          return context.pubsub.asyncIterableIterator('MESSAGE_ADDED');
+        },
         async (payload, _, context) => {
           if (!payload) {
             return false;
           }
 
-          const messageAdded = payload.messageAdded;
+          const messageAdded = (payload as { messageAdded: Message }).messageAdded;
 
-          if (!context.user.id) {
+          if (!context?.user?.id) {
             return false;
           }
 

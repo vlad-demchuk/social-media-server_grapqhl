@@ -5,6 +5,14 @@
     "esModuleInterop": true,
     "sourceMap": true,
     "skipLibCheck": true,
+    
+    /* Strict Type-Checking Options */
+    "strict": true,
+    "strictNullChecks": true,
+    
+    /* Additional Checks */
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
     "noImplicitAny": true,
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,

@@ -2,7 +2,6 @@ import * as conversationService from './service';
 import { ConversationModule } from './generated-types/module-types';
 import { withFilter } from 'graphql-subscriptions';
 import { Conversation } from '../../generated-types/graphql';
-import { Context } from '../../context';
 import { requireAuth } from '../../utils/authHelpers';
 import { createSuccessResponse, createErrorResponse } from '../../utils/errorHelpers';
 
@@ -42,10 +41,12 @@ export const resolvers: ConversationModule.Resolvers = {
   },
   Subscription: {
     conversationsUpdated: {
-      subscribe: withFilter<{ conversationsUpdated: Conversation }, {}, Context>(
+      subscribe: withFilter(
         (_parent, _args, context) => {
-          return context.pubsub.asyncIterableIterator(
-            'CONVERSATIONS_UPDATED');
+          if (!context) {
+            throw new Error('Context is required for subscription');
+          }
+          return context.pubsub.asyncIterableIterator('CONVERSATIONS_UPDATED');
         },
         async (payload, _, context) => {
           console.log('----------------------------------------------------');
@@ -55,9 +56,9 @@ export const resolvers: ConversationModule.Resolvers = {
             return false;
           }
 
-          const conversationsUpdated = payload.conversationsUpdated;
+          const conversationsUpdated = (payload as { conversationsUpdated: Conversation }).conversationsUpdated;
 
-          if (!context.user.id) {
+          if (!context?.user?.id) {
             return false;
           }
 
