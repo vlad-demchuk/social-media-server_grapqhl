@@ -1,6 +1,7 @@
 import { UserModule } from './generated-types/module-types';
 import * as userService from './service';
 import { requireAuth } from '../../utils/authHelpers';
+import { NotFoundException } from '../../exeptions/NotFoundException';
 
 export const resolvers: UserModule.Resolvers = {
   Query: {
@@ -15,6 +16,10 @@ export const resolvers: UserModule.Resolvers = {
       requireAuth(context);
 
       const user = await userService.getOne(args.userId);
+      
+      if (!user) {
+        throw new NotFoundException('User not found');
+      }
 
       return user;
     },

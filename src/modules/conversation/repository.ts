@@ -219,5 +219,5 @@ export const checkUserInChat = async (userId: number, conversationId: number): P
         AND conversation_id = $2 LIMIT 1;
   `, [userId, conversationId]);
 
-  return result.rowCount > 0;
+  return (result.rowCount ?? 0) > 0;
 };

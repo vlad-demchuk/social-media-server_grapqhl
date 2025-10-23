@@ -1,5 +1,6 @@
 import { CreatePostInput, Post } from '../../generated-types/graphql';
 import * as postRepository from './repository';
+import { NotFoundException } from '../../exeptions/NotFoundException';
 
 export const getAll = async (currentUserId: number) => {
   return postRepository.findAll(currentUserId);
@@ -10,7 +11,13 @@ export const getPostsByUserName = async (currentUserId: number, userName: string
 };
 
 export const getById = async (userId: number, postId: number): Promise<Post> => {
-  return postRepository.findById(userId, postId);
+  const post = await postRepository.findById(userId, postId);
+  
+  if (!post) {
+    throw new NotFoundException('Post not found');
+  }
+  
+  return post;
 };
 
 export const create = async ({

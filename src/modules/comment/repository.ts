@@ -72,5 +72,5 @@ export const deleteById = async (id: number): Promise<boolean> => {
     [id],
   );
 
-  return result.rowCount > 0;
+  return (result.rowCount ?? 0) > 0;
 };
