@@ -1,6 +1,6 @@
 import { CreatePostInput, Post } from '../../generated-types/graphql';
 import * as postRepository from './repository';
-import { NotFoundException } from '../../exeptions/NotFoundException';
+import { NotFoundException } from '../../exeptions';
 
 export const getAll = async (currentUserId: number) => {
   return postRepository.findAll(currentUserId);

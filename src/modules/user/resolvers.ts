@@ -1,7 +1,7 @@
 import { UserModule } from './generated-types/module-types';
 import * as userService from './service';
 import { requireAuth } from '../../utils/authHelpers';
-import { NotFoundException } from '../../exeptions/NotFoundException';
+import { NotFoundException } from '../../exeptions';
 
 export const resolvers: UserModule.Resolvers = {
   Query: {

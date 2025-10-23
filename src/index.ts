@@ -18,7 +18,6 @@ import { config } from './config/server';
 import { createHttpContext, createWsContext } from './context';
 import { buildSchema } from './schema';
 
-
 (async () => {
   const app = express();
   const httpServer = http.createServer(app);
