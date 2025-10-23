@@ -15,6 +15,7 @@ import { PubSub } from 'graphql-subscriptions';
 import { fromNodeHeaders, toNodeHandler } from 'better-auth/node';
 
 import { auth, Session, User } from './lib/auth';
+import { config } from './config/server';
 import * as commentModule from './modules/comment';
 import * as conversationModule from './modules/conversation';
 import * as likeModule from './modules/like';
@@ -25,8 +26,6 @@ import * as userModule from './modules/user';
 import { Resolvers } from './generated-types/graphql';
 import { typeDefs } from './typeDefs';
 
-const PORT = process.env.PORT || 4000;
-const HOST = process.env.PORT ? '0.0.0.0' : '127.0.0.1';
 
 (async () => {
   const app = express();
@@ -35,14 +34,10 @@ const HOST = process.env.PORT ? '0.0.0.0' : '127.0.0.1';
 
   app.use(
     cors({
-      origin: [
-        process.env.FRONTEND_URL || 'http://localhost:3000',
-        'http://localhost:3000',
-        'https://studio.apollographql.com',
-      ],
-      methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-      credentials: true,
-      allowedHeaders: ['Content-Type', 'Authorization', 'Apollo-Require-Preflight'],
+      origin: config.cors.origins,
+      methods: config.cors.methods,
+      credentials: config.cors.credentials,
+      allowedHeaders: config.cors.allowedHeaders,
     }),
   );
 
@@ -172,7 +167,7 @@ const HOST = process.env.PORT ? '0.0.0.0' : '127.0.0.1';
   );
 
   await new Promise<void>((resolve) =>
-    httpServer.listen({ port: PORT, hostname: HOST }, resolve),
+    httpServer.listen({ port: config.port, hostname: config.host }, resolve),
   );
-  console.log(`🚀 Server ready at ${HOST}:${PORT}/`);
+  console.log(`🚀 Server ready at ${config.host}:${config.port}/`);
 })();
