@@ -21,30 +21,14 @@ export const resolvers: MessageModule.Resolvers = {
       const user = requireAuth(context);
 
       try {
-        const message = await messageService.create({
-          conversationId: args.conversationId,
-          senderId: user.id,
-          content: args.content,
-        });
-
-        const messageAdded: Message = {
-          id: message.id,
-          conversationId: args.conversationId,
-          content: message.content,
-          createdAt: message.createdAt,
-          updatedAt: message.updatedAt,
-          sender: message.sender,
-        };
-
-        context.pubsub.publish('MESSAGE_ADDED', {
-          messageAdded,
-        });
-
-        const conversation = await conversationService.getById(args.conversationId);
-
-        context.pubsub.publish('CONVERSATIONS_UPDATED', {
-          conversationsUpdated: conversation,
-        });
+        const message = await messageService.create(
+          {
+            conversationId: args.conversationId,
+            senderId: user.id,
+            content: args.content,
+          },
+          context
+        );
 
         return createSuccessResponse('Message successfully created!', { createdMessage: message });
       } catch (error) {
