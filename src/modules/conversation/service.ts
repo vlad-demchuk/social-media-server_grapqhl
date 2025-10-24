@@ -1,5 +1,6 @@
 import { Conversation } from '../../generated-types/graphql';
 import * as conversationRepository from './repository';
+import { Context } from '../../graphql/types';
 
 // TODO: Implement pagination/infinite scrolling
 
@@ -27,4 +28,25 @@ export const createDirect = async (currentUserId: number, secondUserId: number):
 
 export const isUserInChat = async (userId: number, conversationId: number) => {
   return conversationRepository.checkUserInChat(userId, conversationId);
+};
+
+export const findOrCreateDirectConversation = async (
+  currentUserId: number,
+  secondUserId: number,
+  context: Context
+): Promise<{ conversation: Conversation; isNew: boolean }> => {
+  let conversation = await getDirectByUserIds(currentUserId, secondUserId);
+  let isNew = false;
+
+  if (!conversation) {
+    conversation = await createDirect(currentUserId, secondUserId);
+    isNew = true;
+
+    // Publish to subscribers
+    context.pubsub.publish('CONVERSATIONS_UPDATED', {
+      conversationsUpdated: conversation,
+    });
+  }
+
+  return { conversation, isNew };
 };

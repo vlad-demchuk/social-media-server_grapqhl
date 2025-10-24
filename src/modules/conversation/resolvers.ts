@@ -20,19 +20,15 @@ export const resolvers: ConversationModule.Resolvers = {
       const user = requireAuth(context);
 
       try {
-        let conversation = await conversationService.getDirectByUserIds(user.id, args.userId);
-        let isConversationExisting = !!conversation;
-
-        if (!isConversationExisting) {
-          conversation = await conversationService.createDirect(user.id, args.userId);
-          context.pubsub.publish('CONVERSATIONS_UPDATED', {
-            conversationsUpdated: conversation,
-          });
-        }
+        const { conversation, isNew } = await conversationService.findOrCreateDirectConversation(
+          user.id,
+          args.userId,
+          context
+        );
 
         return createSuccessResponse(
-          isConversationExisting ? 'Conversation already exists!' : 'Conversation successfully created!',
-          { conversation },
+          isNew ? 'Conversation successfully created!' : 'Conversation already exists!',
+          { conversation }
         );
       } catch (error) {
         return createErrorResponse(error, 'Failed to create conversation');
