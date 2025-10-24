@@ -24,4 +24,8 @@ node_modules/
 # IDEs
 .idea/
 
+# Env
 .env
+
+# AI
+.claude/
