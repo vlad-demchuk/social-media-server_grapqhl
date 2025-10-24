@@ -1,6 +1,6 @@
 import { NotificationPayload } from '../generated-types/graphql';
 import { User } from '../lib/auth';
-import { Context } from '../context';
+import { Context } from '../graphql/types';
 
 export const createNotificationPayload = (
   user: User,

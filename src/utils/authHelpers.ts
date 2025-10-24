@@ -1,4 +1,4 @@
-import { Context } from '../context';
+import { Context } from '../graphql/types';
 import { UnauthorizedException } from '../exeptions';
 import { User } from '../lib/auth';
 

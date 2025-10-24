@@ -1,7 +1,7 @@
-import { auth } from './lib/auth';
+import { auth } from '../lib/auth';
 import { PubSub } from 'graphql-subscriptions';
 import { fromNodeHeaders } from 'better-auth/node';
-import { normalizeUser } from './utils/authHelpers';
+import { normalizeUser } from '../utils/authHelpers';
 import type { IncomingMessage } from 'http';
 import type { Context, ConnectionParams, Session, User } from './types';
 

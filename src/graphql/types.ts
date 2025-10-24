@@ -1,4 +1,4 @@
-import { auth, Session, User } from './lib/auth';
+import { auth, Session, User } from '../lib/auth';
 import { PubSub } from 'graphql-subscriptions';
 
 export type Context = {

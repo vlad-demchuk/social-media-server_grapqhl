@@ -15,8 +15,8 @@ import { toNodeHandler } from 'better-auth/node';
 
 import { auth } from './lib/auth';
 import { config } from './config/server';
-import { createHttpContext, createWsContext } from './context';
-import { buildSchema } from './schema';
+import { createHttpContext, createWsContext } from './graphql/context';
+import { buildSchema } from './graphql/executableSchema';
 
 (async () => {
   const app = express();
