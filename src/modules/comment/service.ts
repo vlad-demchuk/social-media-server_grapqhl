@@ -3,6 +3,7 @@ import * as commentRepository from './repository';
 import * as postService from '../post/service';
 import { Context, User } from '../../graphql/types';
 import { createNotificationPayload, shouldSendNotification, publishNotification } from '../../utils/notificationHelpers';
+import * as notificationService from '../notification/service';
 
 export const getByPostId = async (postId: number) => {
   return commentRepository.findByPostId(postId);
@@ -27,10 +28,19 @@ export const create = async (
       user,
       comment.id,
       'COMMENT',
-      'Your post was commented',
+      content,
       'COMMENT',
       commentedPost.owner.id,
     );
+
+    await notificationService.create({
+      recipientId: commentedPost.owner.id,
+      actorId: userId,
+      type: 'COMMENT',
+      entityId: commentedPost.id,
+      entityType: 'POST',
+      preview: content,
+    });
 
     await publishNotification(context, notificationPayload);
   }
@@ -41,6 +51,3 @@ export const create = async (
 export const remove = async (id: number) => {
   return commentRepository.deleteById(id);
 };
-
-
-
