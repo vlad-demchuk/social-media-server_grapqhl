@@ -9,7 +9,7 @@ export const resolvers: LikeModule.Resolvers = {
       const user = requireAuth(context);
 
       try {
-        const post = await likeService.likePost(user.id, args.postId, context, user);
+        const post = await likeService.likePost(user.id, args.postId, context);
 
         return createSuccessResponse('Like successfully created!', { post });
       } catch (error) {

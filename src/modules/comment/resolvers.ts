@@ -23,7 +23,6 @@ export const resolvers: CommentModule.Resolvers = {
             postId: args.input.postId,
           },
           context,
-          user
         );
 
         return createSuccessResponse('Comment successfully created!', { comment });

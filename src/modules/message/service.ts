@@ -21,7 +21,6 @@ export const create = async (
 ): Promise<Message> => {
   const message = await messageRepository.insert({ conversationId, senderId, content });
 
-  // Publish message to subscribers
   const messageAdded: Message = {
     id: message.id,
     conversationId,
@@ -33,7 +32,6 @@ export const create = async (
 
   context.pubsub.publish('MESSAGE_ADDED', { messageAdded });
 
-  // Update conversation and notify
   const conversation = await conversationRepository.findById(conversationId);
   context.pubsub.publish('CONVERSATIONS_UPDATED', {
     conversationsUpdated: conversation,
@@ -41,4 +39,3 @@ export const create = async (
 
   return message;
 };
-

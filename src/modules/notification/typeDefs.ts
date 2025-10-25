@@ -15,21 +15,12 @@ export const typeDefs = gql`
     createdAt: DateTime!
   }
 
-  type NotificationPayload {
-    recipientId: Int!
-    actor: User!
-    type: NotificationType!
-    entityId: Int!
-    entityType: String!
-    preview: String
-  }
-
   extend type Query {
     "List all notifications"
     notifications: [Notification!]!
   }
 
   extend type Subscription {
-    notificationAdded: NotificationPayload!
+    notificationAdded: Notification!
   }
 `;

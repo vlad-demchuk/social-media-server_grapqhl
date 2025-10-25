@@ -1,35 +1,21 @@
 import { getById as getPostById } from '../post/service';
 import { Post } from '../../generated-types/graphql';
 import * as likeRepository from './repository';
-import { Context, User } from '../../graphql/types';
-import {
-  createNotificationPayload,
-  publishNotification,
-  shouldSendNotification,
-} from '../../utils/notificationHelpers';
+import { Context } from '../../graphql/types';
+import { publishNotification, shouldSendNotification } from '../../utils/notificationHelpers';
 import * as notificationService from '../notification/service';
 
 export const likePost = async (
   userId: number,
   postId: number,
   context: Context,
-  user: User,
 ): Promise<Post> => {
   await likeRepository.insert(userId, postId);
 
   const post = await getPostById(userId, postId);
 
   if (shouldSendNotification(userId, post.owner.id)) {
-    const notificationPayload = createNotificationPayload(
-      user,
-      post.id,
-      'POST',
-      'Your post was liked',
-      'LIKE',
-      post.owner.id,
-    );
-
-    await notificationService.create({
+    const notificationPayload = await notificationService.create({
       recipientId: post.owner.id,
       actorId: userId,
       type: 'LIKE',

@@ -1,7 +1,7 @@
 import { NotificationModule } from './generated-types/module-types';
 import * as notificationService from './service';
 import { withFilter } from 'graphql-subscriptions';
-import { NotificationPayload } from '../../generated-types/graphql';
+import { Notification } from '../../generated-types/graphql';
 import { requireAuth } from '../../utils/authHelpers';
 
 export const resolvers: NotificationModule.Resolvers = {
@@ -28,7 +28,7 @@ export const resolvers: NotificationModule.Resolvers = {
             return false;
           }
 
-          const notificationAdded = (payload as { notificationAdded: NotificationPayload }).notificationAdded;
+          const notificationAdded = (payload as { notificationAdded: Notification }).notificationAdded;
 
           if (!context?.user?.id) {
             return false;

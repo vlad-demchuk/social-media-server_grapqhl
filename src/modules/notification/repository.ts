@@ -56,7 +56,14 @@ export const insert = async ({
         UPDATE SET created_at = NOW(), preview = EXCLUDED.preview
             RETURNING *
             )
-        SELECT upsert.*,
+        SELECT upsert.id           as id,
+               upsert.recipient_id as "recipientId",
+               upsert.type         as type,
+               upsert.entity_id    as "entityId",
+               upsert.entity_type  as "entityType",
+               upsert.preview      as preview,
+               upsert.read         as read,
+               upsert.created_at   as "createdAt",
                json_build_object(
                        'id', u.id,
                        'username', u.username,

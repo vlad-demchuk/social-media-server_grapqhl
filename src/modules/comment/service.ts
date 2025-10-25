@@ -1,8 +1,8 @@
 import { Comment, CreateCommentInput } from '../../generated-types/graphql';
 import * as commentRepository from './repository';
 import * as postService from '../post/service';
-import { Context, User } from '../../graphql/types';
-import { createNotificationPayload, shouldSendNotification, publishNotification } from '../../utils/notificationHelpers';
+import { Context } from '../../graphql/types';
+import { shouldSendNotification, publishNotification } from '../../utils/notificationHelpers';
 import * as notificationService from '../notification/service';
 
 export const getByPostId = async (postId: number) => {
@@ -16,7 +16,6 @@ export const create = async (
     postId,
   }: CreateCommentInput & { userId: number },
   context: Context,
-  user: User
 ): Promise<Comment> => {
   const comment = await commentRepository.insert({ content, userId, postId });
 
@@ -24,16 +23,7 @@ export const create = async (
   const commentedPost = await postService.getById(userId, postId);
 
   if (shouldSendNotification(userId, commentedPost.owner.id)) {
-    const notificationPayload = createNotificationPayload(
-      user,
-      comment.id,
-      'COMMENT',
-      content,
-      'COMMENT',
-      commentedPost.owner.id,
-    );
-
-    await notificationService.create({
+    const notificationPayload = await notificationService.create({
       recipientId: commentedPost.owner.id,
       actorId: userId,
       type: 'COMMENT',

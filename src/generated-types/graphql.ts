@@ -226,16 +226,6 @@ export type Notification = {
   type: NotificationType;
 };
 
-export type NotificationPayload = {
-  __typename?: 'NotificationPayload';
-  actor: User;
-  entityId: Scalars['Int']['output'];
-  entityType: Scalars['String']['output'];
-  preview?: Maybe<Scalars['String']['output']>;
-  recipientId: Scalars['Int']['output'];
-  type: NotificationType;
-};
-
 export type NotificationType =
   | 'COMMENT'
   | 'LIKE';
@@ -316,7 +306,7 @@ export type Subscription = {
   __typename?: 'Subscription';
   conversationsUpdated: Conversation;
   messageAdded: Message;
-  notificationAdded: NotificationPayload;
+  notificationAdded: Notification;
 };
 
 export type User = {
@@ -426,7 +416,6 @@ export type ResolversTypes = {
   Message: ResolverTypeWrapper<Message>;
   Mutation: ResolverTypeWrapper<{}>;
   Notification: ResolverTypeWrapper<Notification>;
-  NotificationPayload: ResolverTypeWrapper<NotificationPayload>;
   NotificationType: NotificationType;
   Post: ResolverTypeWrapper<Post>;
   Query: ResolverTypeWrapper<{}>;
@@ -455,7 +444,6 @@ export type ResolversParentTypes = {
   Message: Message;
   Mutation: {};
   Notification: Notification;
-  NotificationPayload: NotificationPayload;
   Post: Post;
   Query: {};
   String: Scalars['String']['output'];
@@ -582,16 +570,6 @@ export type NotificationResolvers<ContextType = Context, ParentType extends Reso
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type NotificationPayloadResolvers<ContextType = Context, ParentType extends ResolversParentTypes['NotificationPayload'] = ResolversParentTypes['NotificationPayload']> = {
-  actor?: Resolver<ResolversTypes['User'], ParentType, ContextType>;
-  entityId?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
-  entityType?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  preview?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  recipientId?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
-  type?: Resolver<ResolversTypes['NotificationType'], ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
-};
-
 export type PostResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Post'] = ResolversParentTypes['Post']> = {
   commentsCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   content?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -619,7 +597,7 @@ export type QueryResolvers<ContextType = Context, ParentType extends ResolversPa
 export type SubscriptionResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Subscription'] = ResolversParentTypes['Subscription']> = {
   conversationsUpdated?: SubscriptionResolver<ResolversTypes['Conversation'], "conversationsUpdated", ParentType, ContextType>;
   messageAdded?: SubscriptionResolver<ResolversTypes['Message'], "messageAdded", ParentType, ContextType>;
-  notificationAdded?: SubscriptionResolver<ResolversTypes['NotificationPayload'], "notificationAdded", ParentType, ContextType>;
+  notificationAdded?: SubscriptionResolver<ResolversTypes['Notification'], "notificationAdded", ParentType, ContextType>;
 };
 
 export type UserResolvers<ContextType = Context, ParentType extends ResolversParentTypes['User'] = ResolversParentTypes['User']> = {
@@ -648,7 +626,6 @@ export type Resolvers<ContextType = Context> = {
   Message?: MessageResolvers<ContextType>;
   Mutation?: MutationResolvers<ContextType>;
   Notification?: NotificationResolvers<ContextType>;
-  NotificationPayload?: NotificationPayloadResolvers<ContextType>;
   Post?: PostResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
   Subscription?: SubscriptionResolvers<ContextType>;
