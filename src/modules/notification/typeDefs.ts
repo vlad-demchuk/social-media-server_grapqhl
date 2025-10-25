@@ -12,7 +12,7 @@ export const typeDefs = gql`
     entityType: String!
     preview: String
     read: Boolean!
-    createdAt: String!
+    createdAt: DateTime!
   }
 
   type NotificationPayload {

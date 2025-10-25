@@ -216,7 +216,7 @@ export type MutationUnlikePostArgs = {
 export type Notification = {
   __typename?: 'Notification';
   actor: User;
-  createdAt: Scalars['String']['output'];
+  createdAt: Scalars['DateTime']['output'];
   entityId: Scalars['Int']['output'];
   entityType: Scalars['String']['output'];
   id: Scalars['Int']['output'];
@@ -571,7 +571,7 @@ export type MutationResolvers<ContextType = Context, ParentType extends Resolver
 
 export type NotificationResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Notification'] = ResolversParentTypes['Notification']> = {
   actor?: Resolver<ResolversTypes['User'], ParentType, ContextType>;
-  createdAt?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  createdAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   entityId?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   entityType?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;

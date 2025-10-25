@@ -14,6 +14,7 @@ export namespace NotificationModule {
   export type NotificationType = DefinedEnumValues['NotificationType'];
   export type Notification = Pick<Types.Notification, DefinedFields['Notification']>;
   export type User = Types.User;
+  export type DateTime = Types.DateTime;
   export type NotificationPayload = Pick<Types.NotificationPayload, DefinedFields['NotificationPayload']>;
   export type Query = Pick<Types.Query, DefinedFields['Query']>;
   export type Subscription = Pick<Types.Subscription, DefinedFields['Subscription']>;

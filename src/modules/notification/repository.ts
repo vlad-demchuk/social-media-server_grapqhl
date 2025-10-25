@@ -40,9 +40,9 @@ export const insert = async ({
 }: {
   recipientId: number;
   actorId: number;
-  type: 'LIKE' | 'COMMENT' | 'MESSAGE';
+  type: 'LIKE' | 'COMMENT';
   entityId: number;
-  entityType: 'POST' | 'COMMENT' | 'MESSAGE';
+  entityType: 'POST';
   preview?: string;
 }): Promise<Notification> => {
   const { rows } = await pool.query(

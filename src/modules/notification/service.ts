@@ -14,9 +14,9 @@ export const create = async ({
 }: {
   recipientId: number;
   actorId: number;
-  type: 'LIKE' | 'COMMENT' | 'MESSAGE';
+  type: 'LIKE' | 'COMMENT';
   entityId: number;
-  entityType: 'POST' | 'COMMENT' | 'MESSAGE';
+  entityType: 'POST';
   preview?: string;
 }) => {
   return notificationRepository.insert({
