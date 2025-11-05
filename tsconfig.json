@@ -5,6 +5,7 @@
     "esModuleInterop": true,
     "sourceMap": true,
     "skipLibCheck": true,
+    "outDir": "./dist",
     
     /* Strict Type-Checking Options */
     "strict": true,
